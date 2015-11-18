@@ -9,7 +9,7 @@ import org.json.JSONArray;
 
 
 /**
- * Used to extract Chicago food inspection data from the City of Chicago's database.
+ * Used to extract data from the City of Chicago's database using the SODA API.
  * 
  * @author bradleygolden
  *
@@ -24,9 +24,9 @@ public class DataTier {
 	 * Creates a DataTier object that allows the Business Logic tier to access the 
 	 * food inspections database.
 	 */
-	public DataTier()
+	public DataTier(String baseUrl)
 	{
-		baseUrl = "https://data.cityofchicago.org/resource/cwig-ma7x.json?";
+		this.baseUrl = baseUrl;
 	}
 	
 	/**
@@ -128,7 +128,7 @@ public class DataTier {
 	 */
 	public static void main(String[] args) 
 	{
-		DataTier dt = new DataTier();
+		DataTier dt = new DataTier("https://data.cityofchicago.org/resource/cwig-ma7x.json?");
 		ArrayList<JSONObject> jsonList;
 		
 		//
