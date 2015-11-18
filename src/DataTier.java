@@ -23,6 +23,9 @@ public class DataTier {
 	 * <p>
 	 * Creates a DataTier object that allows the Business Logic tier to access the 
 	 * food inspections database.
+	 * 
+	 * @param baseUrl (required) The base url of link to the SODA API. The DataTier
+	 * class will execute queries against this url.
 	 */
 	public DataTier(String baseUrl)
 	{
