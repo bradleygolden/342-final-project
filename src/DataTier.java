@@ -121,6 +121,16 @@ public class DataTier {
 		
 		return json;
 	}
+	
+	/**
+	 * To string method for this class
+	 * 
+	 * @return The base url being used to query against the SODA API database.
+	 */
+	public String toString()
+	{
+		return this.baseUrl;
+	}
 
 	/**
 	 * Test driver for the DataTier class.
