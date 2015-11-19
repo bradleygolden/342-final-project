@@ -11,12 +11,12 @@ import org.json.JSONArray;
 /**
  * Used to extract data from the City of Chicago's database using the SODA API.
  * 
- * @author bradleygolden
+ * @author Bradley Golden
  *
  */
 public class DataTier {
 	
-	private String baseUrl;
+	private String baseUrl; // default url for a selected api, without query additions
 	
 	/**
 	 * Constructor
@@ -56,7 +56,8 @@ public class DataTier {
 	 */
 	public Object executeScalarQuery(String query, String key)
 	{
-		query = baseUrl + query;
+		query = baseUrl + query; // add the given query to the baseUrl for processing to the api
+		
 		try
 		{
 			return urlToJSONArray(query).getJSONObject(0).get(key);
@@ -147,11 +148,11 @@ public class DataTier {
 		//
 		// executeQuery
 		//
-		JSONArray json = dt.executeQuery("$select=aka_name,results,violations&$where=aka_name='MAKOTO'");
-		
 		System.out.println("--------------------------------");
 		System.out.println("     executeQuery Example       ");
 		System.out.println("--------------------------------");
+		
+		JSONArray json = dt.executeQuery("$select=aka_name,results,violations&$where=aka_name='MAKOTO'");
 		
 		try
 		{
@@ -171,12 +172,13 @@ public class DataTier {
 		//
 		// executeScalarQuery
 		//
-		String result = (String) dt.executeScalarQuery("$select=aka_name,count(aka_name)%20AS%20count&$where=aka_name=%27SUBWAY%27&$group=aka_name", "count");
-		String result2 = (String) dt.executeScalarQuery("$select=aka_name,count(aka_name)%20AS%20count&$where=aka_name=%27SUBWAY%27&$group=aka_name", "aka_name");
-			
+		
 		System.out.println("--------------------------------------");
 		System.out.println("     executeScalarQuery Example       ");
 		System.out.println("--------------------------------------");
+		
+		String result = (String) dt.executeScalarQuery("$select=aka_name,count(aka_name)%20AS%20count&$where=aka_name=%27SUBWAY%27&$group=aka_name", "count");
+		String result2 = (String) dt.executeScalarQuery("$select=aka_name,count(aka_name)%20AS%20count&$where=aka_name=%27SUBWAY%27&$group=aka_name", "aka_name");
 		
 		System.out.println(result); // count
 		System.out.println(result2); // aka_name
