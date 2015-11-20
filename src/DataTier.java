@@ -1,11 +1,5 @@
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.*;
 import java.util.Scanner;
 
@@ -15,15 +9,21 @@ import java.util.Scanner;
  * @author Bradley Golden
  *
  */
-public class DataTier implements Backend<ResultSet, String>{
+public class DataTier implements Backend<ResultSet, String>
+{
+	
 	private String connectionString; // string used to connect to azure sql database
+	
+	//
 	// Declare the JDBC objects.
+	//
     private Connection connection;
     private Statement statement;
     private ResultSet resultSet;
     private PreparedStatement prepStatement;
-    private String password;
-    private String username;
+    
+    private String password; // password used to connect to database
+    private String username; // username used to connect to database
 	
     /**
      * Creates a DataTier object with connection string initialized and all
@@ -44,7 +44,7 @@ public class DataTier implements Backend<ResultSet, String>{
             + "encrypt=true;"
             + "hostNameInCertificate=*.database.windows.net;"
             + "loginTimeout=30;" 
-            , username, password);
+            , username, password); // default connection string
 		
 		connection = null;
 		statement = null;
@@ -114,13 +114,21 @@ public class DataTier implements Backend<ResultSet, String>{
 	 * @return True if connection succeeded, false otherwise.
 	 * @throws SQLException
 	 */
-	public boolean testConnection() throws SQLException
+	public boolean testConnection()
 	{
 		boolean isConnected;
 		
 		initDB();
 		
-		isConnected = connection.isValid(30);
+		try 
+		{
+			isConnected = connection.isValid(30);
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+			isConnected = false;
+		}
 		
 		closeDB();
 		
@@ -213,18 +221,11 @@ public class DataTier implements Backend<ResultSet, String>{
 	 * 
 	 * @param args Command line arguments
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) 
+	{
 		DataTier dt = new DataTier("/Users/bradleygolden/Development/342-final-project/dbText.txt");
-		
-		try
-		{
-			System.out.println("Database connection status: " + dt.testConnection());
-		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
-		}
-		
 
+		System.out.println("Database connection status: " + dt.testConnection());
+		
 	}
 }
