@@ -171,7 +171,7 @@ public class DataTier implements Backend<ResultSet, String>{
 	 */
 	@Override
 	public Object executeScalarQuery(String... args) {
-		String query; // the user inputted sql statment
+		String query; // the user inputed sql statement
 		String selectSql; // the sql statement
 		Object result; // the result to be used
 		
