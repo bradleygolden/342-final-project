@@ -62,8 +62,8 @@ public class SodaTier implements Backend<JSONArray, String>{
 	@Override
 	public Object executeScalarQuery(String... args)
 	{
-		String query = args[0];
-		String key = args[1];
+		String query = args[0]; // the SoQL query
+		String key = args[1]; // the key to be used to specify the scalar value to return
 		
 		query = cleanQuery(query);
 		query = baseUrl + query; // add the given query to the baseUrl for processing to the api
