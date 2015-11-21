@@ -67,9 +67,9 @@ public class BusinessTier {
 			//Create the list based on what was returned by the query
 			for(int i = 0; i < jsonSize; i++)
 			{
-				businessName = json.getJSONObject(0).get("aka_name").toString();
-				address = json.getJSONObject(0).get("address").toString();
-				result = json.getJSONObject(0).get("results").toString();
+				businessName = json.getJSONObject(i).get("aka_name").toString();
+				address = json.getJSONObject(i).get("address").toString();
+				result = json.getJSONObject(i).get("results").toString();
 				
 				aRestaurant = business.new Restaurant(businessName, address, result);
 				rList.add(aRestaurant);
