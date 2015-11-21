@@ -14,10 +14,43 @@ public class BusinessTierObjects {
 	
 	public class Restaurant
 	{
+		//Data Dictionary
+		private String name;
+		private String address;
+		private String result;
+		
 		public Restaurant()
+		//POST:
 		{
 			
 		}
-	}
+		
+		public Restaurant(String name, String address, String result )
+		//POST: 
+		{
+			this.name = name;
+			this.address = address;
+			this.result = result;	
+		}
+		
+		public String getName()
+		//POST: 
+		{
+			return name;
+		}
+		
+		public String getAddress()
+		//POST:
+		{
+			return address;
+		}
+		
+		public String getResult()
+		//POST: 
+		{
+			return result;
+		}
+		
+	}//end of Restaurant
 
 }
