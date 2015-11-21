@@ -102,13 +102,13 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  		
  		if(e.getSource()==searchButton)
  		{
+ 			/*
  			JOptionPane.showMessageDialog(
                     null,
                     "Search button was clicked!",
                     "Attention!",
                     JOptionPane.INFORMATION_MESSAGE,null);
- 			
- 			
+            */
  			
  			
  			
@@ -117,14 +117,16 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  			BusinessTierObjects.Restaurant result=restaurant.getRestaurant(nameField.getText());
  			
  			
- 			String searchResults="";
+ 			String searchResults=result.getName()+result.getAddress()+result.getResult();
+ 			
+ 			JOptionPane.showMessageDialog(
+                    null,
+                    searchResults,
+                    "Attention!",
+                    JOptionPane.INFORMATION_MESSAGE,null);
  			
  			
- 			
- 			
- 			
- 			
- 			
+ 
  		}
  		
  		
