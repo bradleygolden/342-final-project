@@ -33,7 +33,8 @@ public class BusinessTier {
 	}
 	
 	public ArrayList<BusinessTierObjects.Restaurant> getRestaurant(String businessName)
-	//POST: FCTVAL == ArrayList<BusinessTierObjects.Restaurant> object
+	//POST: FCTVAL == ArrayList<BusinessTierObjects.Restaurant> object if query was successful, null
+	//		otherwise
 	{
 		//Data Dictionary
 		int jsonSize;
@@ -58,19 +59,18 @@ public class BusinessTier {
 			rList = new ArrayList<BusinessTierObjects.Restaurant>();
 			
 			
-
-			businessName = json.getJSONObject(0).get("aka_name").toString();
-			address = json.getJSONObject(0).get("address").toString();
-			result = json.getJSONObject(0).get("results").toString();
-			
 			jsonSize = json.length();
+			
 			//Now, create the objects that are being returned based on the data that was pulled
 			business = new BusinessTierObjects();
 			
 			//Create the list based on what was returned by the query
 			for(int i = 0; i < jsonSize; i++)
 			{
-
+				businessName = json.getJSONObject(0).get("aka_name").toString();
+				address = json.getJSONObject(0).get("address").toString();
+				result = json.getJSONObject(0).get("results").toString();
+				
 				aRestaurant = business.new Restaurant(businessName, address, result);
 				rList.add(aRestaurant);
 			}
@@ -96,4 +96,4 @@ public class BusinessTier {
 	
 	
 	
-}
+}//end of class
