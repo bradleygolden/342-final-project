@@ -1,7 +1,9 @@
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 //
 // Oliver San Juan
@@ -18,6 +20,7 @@ public class BusinessTier {
 	private String businessName;	
 	private String address;
 	private String result;
+	private ArrayList<BusinessTierObjects.Restaurant> rList;
 	
 	public BusinessTier()
 	//POST: Instantiates a BusinessTier object with private class member sql initialized to ""
@@ -29,9 +32,13 @@ public class BusinessTier {
 				
 	}
 	
-	public BusinessTierObjects.Restaurant getRestaurant(String businessName)
-	//POST: FCTVAL == BusinessTierObjects.Restaurant object
+	public ArrayList<BusinessTierObjects.Restaurant> getRestaurant(String businessName)
+	//POST: FCTVAL == ArrayList<BusinessTierObjects.Restaurant> object
 	{
+		//Data Dictionary
+		int jsonSize;
+		BusinessTierObjects business;
+		BusinessTierObjects.Restaurant aRestaurant;
 		
 		//Connect to the database
 		SodaTier aSodaTier = new SodaTier("https://data.cityofchicago.org/resource/cwig-ma7x.json?");
@@ -48,18 +55,27 @@ public class BusinessTier {
 				return null;
 			}
 			
+			rList = new ArrayList<BusinessTierObjects.Restaurant>();
+			
+			
+
 			businessName = json.getJSONObject(0).get("aka_name").toString();
 			address = json.getJSONObject(0).get("address").toString();
 			result = json.getJSONObject(0).get("results").toString();
 			
-			//Check to see if what was received is a valid value
-			
+			jsonSize = json.length();
 			//Now, create the objects that are being returned based on the data that was pulled
-			BusinessTierObjects business = new BusinessTierObjects();
+			business = new BusinessTierObjects();
 			
-			BusinessTierObjects.Restaurant aRestaurant = business.new Restaurant(businessName, address, result);
-							
-			return aRestaurant;
+			//Create the list based on what was returned by the query
+			for(int i = 0; i < jsonSize; i++)
+			{
+
+				aRestaurant = business.new Restaurant(businessName, address, result);
+				rList.add(aRestaurant);
+			}
+				
+			return rList;
 			
 		}
 		catch (NullPointerException ex)
