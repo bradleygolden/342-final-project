@@ -18,6 +18,8 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	private JButton searchButton;			//Button for executing the search
  	private JTextField nameField;		    //Holds the name of the facility
  	private JTextField addressField;		//Holds the street address of the facility
+ 	private JLabel searchBy;				//Label for "Search By"
+ 	private JLabel andOr;					//Label for "And/Or"
  	
  
  
@@ -25,36 +27,56 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  @Override
  public void init()
  {
-	 JPanel topRow;
-	 JPanel bottomRow;
+	 
+	 setSize(600,500);
+	 
+	 JPanel mainPanel;
+	 JPanel leftSide;
+	 JPanel rightSide;
+	 JPanel canvas;
+	 GridLayout leftSideLayout;
      
-     setLayout(new FlowLayout());
+     //setLayout(new BorderLayout(20,20));
      //panels to organize appearance
-     topRow=new JPanel();
-     bottomRow=new JPanel();
+     
+	 canvas=new JPanel();
+     mainPanel=new JPanel();
+     leftSide=new JPanel();
+     rightSide=new JPanel();
+     
+     leftSideLayout=new GridLayout(5,1);
+     leftSideLayout.setVgap(getHeight()/10);
+     
+     leftSide.setLayout(leftSideLayout);
+     rightSide.setLayout(new GridLayout(3,1));
+     mainPanel.setLayout(new GridLayout(1,2));
+     canvas.setLayout(new BorderLayout(20,20));
+     
      
      searchButton=new JButton("Search");
      nameField=new JTextField("Name",10);
-     addressField=new JTextField("Street Address",40);
+     addressField=new JTextField("Street Address",20);
+     
+     searchBy=new JLabel("                         Search By:");
+     andOr=new JLabel("                          And/Or");
     		 
-     nameField.addMouseListener(this);
+     //nameField.addMouseListener(this);
      nameField.addFocusListener(this);
      addressField.addFocusListener(this);
+     searchButton.addActionListener(this);
      
-     //add components to the panels
-     //topRow.add(nameField);
-     //topRow.add(addressField);
-     //bottomRow.add(searchButton);
-     
-     //add panels to the applet
-     //add(topRow);
-     //add(bottomRow);
-     
-     
-     add(nameField);
-     add(addressField);
-     add(searchButton);
-     
+
+          
+     leftSide.add(searchBy);
+     leftSide.add(nameField);
+     leftSide.add(andOr);
+     leftSide.add(addressField);
+     leftSide.add(searchButton);
+     mainPanel.add(leftSide);
+     mainPanel.add(rightSide);
+     //canvas.add(mainPanel, BorderLayout.CENTER);
+     add(mainPanel);     
+    
      
  	}//end init()
  
@@ -69,7 +91,28 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	@Override 
  	public void actionPerformed(ActionEvent e)
  	{
-    
+ 		
+ 		if(e.getSource()==searchButton)
+ 		{
+ 			JOptionPane.showMessageDialog(
+                    null,
+                    "Search button was clicked!",
+                    "Attention!",
+                    JOptionPane.INFORMATION_MESSAGE,null);
+ 			
+ 			
+ 			
+ 			
+ 			
+ 			
+ 			
+ 			
+ 			
+ 			
+ 		}
+ 		
+ 		
+ 		
  		repaint();
  	}
  
