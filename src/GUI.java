@@ -20,8 +20,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	private JTextField addressField;		//Holds the street address of the facility
  	private JLabel searchBy;				//Label for "Search By"
  	private JLabel andOr;					//Label for "And/Or"
- 	
- 
+ 	private JLabel result;					//Label for displaying the result of the inspection
  
  //initialize the applet and prompt user for inputs
  @Override
@@ -35,6 +34,8 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 	 JPanel rightSide;
 	 JPanel canvas;
 	 GridLayout leftSideLayout;
+	 GridLayout rightSideLayout;
+	 GridLayout mainPanelLayout;
      
      //setLayout(new BorderLayout(20,20));
      //panels to organize appearance
@@ -46,10 +47,15 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
      
      leftSideLayout=new GridLayout(5,1);
      leftSideLayout.setVgap(getHeight()/10);
-     
      leftSide.setLayout(leftSideLayout);
-     rightSide.setLayout(new GridLayout(3,1));
-     mainPanel.setLayout(new GridLayout(1,2));
+     
+     rightSideLayout=new GridLayout(3,1);
+     rightSideLayout.setVgap(getHeight()/10);
+     rightSide.setLayout(rightSideLayout);
+     
+     mainPanelLayout=new GridLayout(1,2);
+     mainPanelLayout.setHgap(getWidth()/10);
+     mainPanel.setLayout(mainPanelLayout);
      canvas.setLayout(new BorderLayout(20,20));
      
      
@@ -59,6 +65,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
      
      searchBy=new JLabel("                         Search By:");
      andOr=new JLabel("                          And/Or");
+     result=new JLabel("RESULT");
     		 
      //nameField.addMouseListener(this);
      nameField.addFocusListener(this);
@@ -72,6 +79,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
      leftSide.add(andOr);
      leftSide.add(addressField);
      leftSide.add(searchButton);
+     rightSide.add(result);
      mainPanel.add(leftSide);
      mainPanel.add(rightSide);
      //canvas.add(mainPanel, BorderLayout.CENTER);
@@ -102,6 +110,14 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  			
  			
  			
+ 			
+ 			
+ 			BusinessTier restaurant=new BusinessTier();
+ 			
+ 			BusinessTierObjects.Restaurant result=restaurant.getRestaurant(nameField.getText());
+ 			
+ 			
+ 			String searchResults="";
  			
  			
  			
