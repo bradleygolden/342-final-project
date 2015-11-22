@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 //
 // Oliver San Juan
 // This class is responsible for instantiating the objects necessary for the GUI. It uses the 
@@ -20,7 +22,7 @@ public class BusinessTierObjects {
 		private String result;
 		
 		public Restaurant()
-		//POST:
+		//POST: Default Restaurant object is created
 		{
 			
 		}
@@ -52,5 +54,31 @@ public class BusinessTierObjects {
 		}
 		
 	}//end of Restaurant
+	
+	public class RestaurantDetail extends Restaurant
+	{
+		//Data Dictionary
+		private String date;
+		private ArrayList<String> violations;
+		
+		public RestaurantDetail(String name, String address, String result, String date, ArrayList<String> violations)
+		{
+			super(name, address, result);
+			this.date = date;
+			this.violations = violations;
+		}
+		
+		public String getDate()
+		{
+			return date;
+		}
+		
+		public ArrayList<String> getViolations()
+		{
+			return violations;
+		}
+		
+	}//end of class
+	
 
 }

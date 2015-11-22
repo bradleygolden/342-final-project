@@ -21,6 +21,7 @@ public class BusinessTier {
 	private String address;
 	private String result;
 	private ArrayList<BusinessTierObjects.Restaurant> rList;
+	private SodaTier aSodaTier;
 	
 	public BusinessTier()
 	//POST: Instantiates a BusinessTier object with private class member sql initialized to ""
@@ -42,7 +43,7 @@ public class BusinessTier {
 		BusinessTierObjects.Restaurant aRestaurant;
 		
 		//Connect to the database
-		SodaTier aSodaTier = new SodaTier("https://data.cityofchicago.org/resource/cwig-ma7x.json?");
+		aSodaTier = new SodaTier("https://data.cityofchicago.org/resource/cwig-ma7x.json?");
 		
 		//Build the sql string
 		sql = String.format("$select=aka_name,results,address &$where=aka_name='%s'", businessName);
@@ -89,10 +90,36 @@ public class BusinessTier {
 			return null;
 		}
 		
-
 	}//end of method
 	
-	
+	public ArrayList<BusinessTierObjects.RestaurantDetail> getDetail(String name, String address)
+	{
+		//Connect to the database
+		aSodaTier = new SodaTier("https://data.cityofchicago.org/resource/cwig-ma7x.json?");
+		
+		//Find a way to combine the rows using SQL
+		sql = String.format("$select=aka_name,results,$q &$where=aka_name='%s',q = '%s",name, address );
+		
+		try
+		{
+			json = aSodaTier.executeQuery(sql);
+			
+			
+		}
+		catch (NullPointerException ex)
+		{
+			System.out.println(ex.toString());
+			return null;
+		}
+//		catch (JSONException ex)
+//		{
+//			System.out.println(ex.toString());
+//			return null;
+//		}
+		
+		
+		return null;
+	}
 	
 	
 	
