@@ -1,10 +1,17 @@
 import java.awt.*;
 import java.applet.*;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.Button;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
 import javax.swing.JOptionPane;
 import java.lang.Math;
+import java.util.ArrayList;
 
 /**
  * @author kendevane
@@ -20,7 +27,8 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	private JTextField addressField;		//Holds the street address of the facility
  	private JLabel searchBy;				//Label for "Search By"
  	private JLabel andOr;					//Label for "And/Or"
- 	private JLabel result;					//Label for displaying the result of the inspection
+ 	private JLabel results;					//Label for displaying the result of the inspection
+ 	private ImageIcon image;				//Holds the image for result status
  
  //initialize the applet and prompt user for inputs
  @Override
@@ -65,7 +73,11 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
      
      searchBy=new JLabel("                         Search By:");
      andOr=new JLabel("                          And/Or");
-     result=new JLabel("RESULT");
+     
+     
+     image = new ImageIcon("../pass.jpg");
+     results=new JLabel("",null, JLabel.CENTER);
+     
     		 
      //nameField.addMouseListener(this);
      nameField.addFocusListener(this);
@@ -79,12 +91,12 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
      leftSide.add(andOr);
      leftSide.add(addressField);
      leftSide.add(searchButton);
-     rightSide.add(result);
+     rightSide.add(results);
      mainPanel.add(leftSide);
      mainPanel.add(rightSide);
      //canvas.add(mainPanel, BorderLayout.CENTER);
-     add(mainPanel);     
-    
+     add(mainPanel);
+     
      
  	}//end init()
  
@@ -114,10 +126,15 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  			
  			BusinessTier restaurant=new BusinessTier();
  			
- 			BusinessTierObjects.Restaurant result=restaurant.getRestaurant(nameField.getText());
+ 			ArrayList<BusinessTierObjects.Restaurant> result=restaurant.getRestaurant(nameField.getText());
  			
  			
- 			String searchResults=result.getName()+result.getAddress()+result.getResult();
+ 			String searchResults=result.get(0).getName()+result.get(0).getAddress()+result.get(0).getResult();
+ 			
+ 			for(BusinessTierObjects.Restaurant r:result)
+ 			{
+ 				System.out.println(r.getName()+r.getAddress()+" "+r.getResult());
+ 			}
  			
  			JOptionPane.showMessageDialog(
                     null,
@@ -125,7 +142,9 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
                     "Attention!",
                     JOptionPane.INFORMATION_MESSAGE,null);
  			
+ 			image=getImage(result.get(0).getResult());
  			
+ 			results.setIcon(image);
  
  		}
  		
@@ -205,6 +224,30 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 		return (int)(scaleFactor*getHeight());
 	}
 	
+	public static BufferedImage resize(BufferedImage image, int width, int height) {
+	    BufferedImage bi = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);
+	    Graphics2D g2d = (Graphics2D) bi.createGraphics();
+	    g2d.addRenderingHints(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
+	    g2d.drawImage(image, 0, 0, width, height, null);
+	    g2d.dispose();
+	    return bi;
+	}
+	
+	public ImageIcon getImage(String result)
+	{
+		BufferedImage img=null;
+			try
+			{
+				img=ImageIO.read(new File("../"+result+".jpg"));
+			}
+			catch (IOException e1)
+			{
+				e1.printStackTrace();
+			}
+			BufferedImage resizedImg=resize(img,150,60);
+			ImageIcon returnImage=new ImageIcon(resizedImg);
+			return returnImage;		
+	}
 	
 	
 	
