@@ -171,7 +171,11 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  				
  				name.setText("Name of facility: "+nameField.getText());
  				address.setText("Address: "+addressStringArray[selectedIndex]);
-
+ 				
+ 				
+ 				result=restaurant.getRestaurant(nameField.getText());
+ 				image=getImage(result.get(0).getResult());
+ 	 			results.setIcon(image);
  			}
  			
  			else{
