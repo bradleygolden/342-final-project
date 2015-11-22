@@ -32,6 +32,8 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	private JLabel searchBy;				//Label for "Search By"
  	private JLabel andOr;					//Label for "And/Or"
  	private JLabel results;					//Label for displaying the result of the inspection
+ 	private JLabel name;					//Holds the name of the queried facility
+ 	private JLabel address;					//Holds the address of the queried facility
  	private ImageIcon image;				//Holds the image for result status
  	private JList<String> locations;		//Holds multiple locations for a given facility
  	private ArrayList<String> addressArray;	//Holds all the addresses of a facility with multiple names
@@ -64,7 +66,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
      leftSideLayout.setVgap(getHeight()/10);
      leftSide.setLayout(leftSideLayout);
      
-     rightSideLayout=new GridLayout(3,1);
+     rightSideLayout=new GridLayout(5,1);
      rightSideLayout.setVgap(getHeight()/10);
      rightSide.setLayout(rightSideLayout);
      
@@ -74,12 +76,14 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
      canvas.setLayout(new BorderLayout(20,20));
      
      
-     searchButton=new JButton("Search");
+     searchButton=new JButton("Search!");
      nameField=new JTextField("Name",10);
      addressField=new JTextField("Street Address",20);
      
      searchBy=new JLabel("                         Search By:");
      andOr=new JLabel("                          And/Or");
+     name=new JLabel("Name of facility: ");
+     address=new JLabel("Address: ");
      
      
      image = new ImageIcon("../pass.jpg");
@@ -99,6 +103,8 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
      leftSide.add(addressField);
      leftSide.add(searchButton);
      rightSide.add(results);
+     rightSide.add(name);
+     rightSide.add(address);
      mainPanel.add(leftSide);
      mainPanel.add(rightSide);
      //canvas.add(mainPanel, BorderLayout.CENTER);
@@ -129,28 +135,23 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  			ArrayList<BusinessTierObjects.Restaurant> result=restaurant.getRestaurant(nameField.getText());
  			System.out.println("After query");
 
- 			String searchResults=result.get(0).getName()+result.get(0).getAddress()+result.get(0).getResult();
+ 			//String searchResults=result.get(0).getName()+result.get(0).getAddress()+result.get(0).getResult();
  			
  			addressArray=new ArrayList<String>();
+ 			
  			for(BusinessTierObjects.Restaurant r:result)
  			{
- 				System.out.println(r.getName()+r.getAddress()+" "+r.getResult());
+ 				//System.out.println(r.getName()+r.getAddress()+" "+r.getResult());
  				addressArray.add(r.getAddress());
  			}
- 			
- 			/*
- 			JOptionPane.showMessageDialog(
-                    null,
-                    searchResults,
-                    "Attention!",
-                    JOptionPane.INFORMATION_MESSAGE,null);
- 			*/
+ 		
  			
  			if(result.size()>1)
  			{
  				JOptionPane.showMessageDialog(
  	                    null,
- 	                    searchResults,
+ 	                    "More than one facility with that name was found. "
+ 	                    + "Please chooose the facility from among the following options",
  	                    "Attention!",
  	                    JOptionPane.INFORMATION_MESSAGE,null);
  				addressStringArray=new String[addressArray.size()];
@@ -160,19 +161,23 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  				}
  				
  				
+ 	 			JList list = new JList(addressStringArray);
+ 				JOptionPane.showMessageDialog(
+ 					  null, list, "Multi-Select Example", JOptionPane.PLAIN_MESSAGE);
+ 				int selectedIndex=list.getSelectedIndex();
+ 				System.out.println(list.getSelectedIndex());
+ 				
+ 				addressField.setText(addressStringArray[selectedIndex]);
+ 				
+ 				name.setText("Name of facility: "+nameField.getText());
+ 				address.setText("Address: "+addressStringArray[selectedIndex]);
+
  			}
  			
  			else{
  				image=getImage(result.get(0).getResult());
  	 			results.setIcon(image);
  			}
- 			
- 			/*
- 			JList list = new JList(addressStringArray);
-				JOptionPane.showMessageDialog(
-				  null, list, "Multi-Select Example", JOptionPane.PLAIN_MESSAGE);
-				System.out.println(list.getSelectedIndex());
-		    */
  		}
  		
  		
