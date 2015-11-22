@@ -103,7 +103,6 @@ public class DataTier implements Backend<ResultSet, String>
 	private void closeDB()
 	{
         // Close the connections after the data has been handled.
-        if (resultSet != null) try { resultSet.close(); } catch(Exception e) {}
         if (statement != null) try { statement.close(); } catch(Exception e) {}
         if (connection != null) try { connection.close(); } catch(Exception e) {}
         if (prepStatement != null) try {prepStatement.close(); } catch(Exception e){}
@@ -149,22 +148,21 @@ public class DataTier implements Backend<ResultSet, String>
 		
 		query = args[0];
 		
+		initDB(); // initialize the database
+		
 		try 
 		{
-			initDB(); // initialize the database
-			
             // create and execute a SELECT SQL statement.
             selectSql = query;
             resultSet = statement.executeQuery(selectSql);
         }
         catch (Exception e) 
 		{
-            e.printStackTrace();
             resultSet = null; // query failed
         }
         finally 
         {
-            closeDB(); // close database connection
+            //closeDB(); // close database connection
         }
 		
 		return resultSet;
@@ -184,10 +182,10 @@ public class DataTier implements Backend<ResultSet, String>
 		Object result; // the result to be used
 		
 		query = args[0];
-		
+
+		initDB(); // initialize the database
 		try 
 		{
-			initDB(); // initialize the database
 			
             // create and execute a SELECT SQL statement.
             selectSql = query;
@@ -196,7 +194,7 @@ public class DataTier implements Backend<ResultSet, String>
             // convert result set to object type and extract first value
             if (resultSet.next() ) 
             {  
-                result = resultSet.getObject(0);  
+                result = resultSet.getObject(1);
             }
             else
             {
@@ -208,12 +206,37 @@ public class DataTier implements Backend<ResultSet, String>
             e.printStackTrace();
             result = null; // query failed
         }
-        finally 
-        {
-            closeDB(); // close database connection
-        }
 		
 		return (Object) result;
+	}
+	
+	/**
+	 * Executes a non query against a database.
+	 * <p>
+	 * For example, inserting rows into a table is a "non query".
+	 * 
+	 * @param args[0] (required) Requested query to execute against the database.
+	 * @throws Exception Invalid query.
+	 */
+	public void executeNonQuery(String... args) {
+		String query; // the user inputed sql statement
+		String nonQuerySql; // the sql statement
+		Object result; // the result to be used
+		
+		query = args[0];
+
+		initDB(); // initialize the database
+		try 
+		{
+            // create and execute a non query SQL statement.
+            nonQuerySql = query;
+            statement.executeQuery(nonQuerySql);
+        }
+        catch (Exception e) 
+		{
+        	e.printStackTrace();
+            result = null; // query failed
+        }
 	}
 
 	/**
@@ -224,8 +247,44 @@ public class DataTier implements Backend<ResultSet, String>
 	public static void main(String[] args) 
 	{
 		DataTier dt = new DataTier("/Users/bradleygolden/Development/342-final-project/dbText.txt");
-
+		
 		System.out.println("Database connection status: " + dt.testConnection());
+		
+		// TEST Non Query Queries
+		//dt.executeNonQuery(("CREATE TABLE Test ( ID INT PRIMARY KEY);"));
+		//dt.executeNonQuery("INSERT INTO Test (ID) VALUES (1)");
+		
+		// TEST Scalar Queries
+		//Object result = dt.executeScalarQuery("SELECT count(*) FROM Facilities");
+		
+		//System.out.println(result.toString());
+		
+		//Object result2 = dt.executeScalarQuery("SELECT SCOPE_IDENTITY() FROM Facilities");
+		
+		//System.out.println(result2.toString());
+		
+		// TEST Query
+		/*
+		ResultSet rs = dt.executeQuery("SELECT * FROM Facilities");
+		
+		try {
+			while (rs.next())
+			{
+				System.out.println(rs.getInt("FacilityID") + "");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		dt.closeDB();
+		*/
+		
+		String query = "INSERT INTO Facilities (Name, Type, Address, Risk) OUTPUT inserted.FacilityID VALUES ('Bradley', 'Restaurant', '1234 W Nonsense', 101)";
+		Object result = dt.executeScalarQuery(query);
+		System.out.println(result.toString());
+		//SELECT * FROM Facilities WHERE Name = 'Bradley'
+		
+		
 		
 	}
 }
