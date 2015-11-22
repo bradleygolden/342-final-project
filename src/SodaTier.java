@@ -171,7 +171,6 @@ public class SodaTier implements Backend<JSONArray, String>{
 	{
 		// populate SodaTier object with a base array
 		SodaTier st = new SodaTier("https://data.cityofchicago.org/resource/cwig-ma7x.json?");
-		ArrayList<JSONObject> jsonList;
 		
 		//
 		// executeQuery
