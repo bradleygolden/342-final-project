@@ -151,7 +151,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  				JOptionPane.showMessageDialog(
  	                    null,
  	                    "More than one facility with that name was found. "
- 	                    + "Please chooose the facility from among the following options",
+ 	                    + "Please chooose the facility from among the following options.",
  	                    "Attention!",
  	                    JOptionPane.INFORMATION_MESSAGE,null);
  				addressStringArray=new String[addressArray.size()];
@@ -160,8 +160,8 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  					addressStringArray[x]=addressArray.get(x);
  				}
  				
- 				
- 	 			JList list = new JList(addressStringArray);
+ 				JComboBox list=new JComboBox(addressStringArray);
+ 	 			//JList list = new JList(addressStringArray);
  				JOptionPane.showMessageDialog(
  					  null, list, "Multi-Select Example", JOptionPane.PLAIN_MESSAGE);
  				int selectedIndex=list.getSelectedIndex();
