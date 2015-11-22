@@ -1,10 +1,21 @@
 import java.awt.*;
 import java.applet.*;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.Button;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
 import javax.swing.JOptionPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import java.lang.Math;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * @author kendevane
@@ -13,14 +24,18 @@ import java.lang.Math;
  * 
  */
 
-public class GUI extends Applet implements ActionListener, ItemListener, MouseListener, FocusListener
+public class GUI extends Applet implements ActionListener, ItemListener, MouseListener, FocusListener, ListSelectionListener
 {
  	private JButton searchButton;			//Button for executing the search
  	private JTextField nameField;		    //Holds the name of the facility
  	private JTextField addressField;		//Holds the street address of the facility
  	private JLabel searchBy;				//Label for "Search By"
  	private JLabel andOr;					//Label for "And/Or"
- 	private JLabel result;					//Label for displaying the result of the inspection
+ 	private JLabel results;					//Label for displaying the result of the inspection
+ 	private ImageIcon image;				//Holds the image for result status
+ 	private JList<String> locations;		//Holds multiple locations for a given facility
+ 	private ArrayList<String> addressArray;	//Holds all the addresses of a facility with multiple names
+ 	private String[] addressStringArray;	//Holds all the addresses of a facility with multiple names
  
  //initialize the applet and prompt user for inputs
  @Override
@@ -45,7 +60,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
      leftSide=new JPanel();
      rightSide=new JPanel();
      
-     leftSideLayout=new GridLayout(5,1);
+     leftSideLayout=new GridLayout(6,1);
      leftSideLayout.setVgap(getHeight()/10);
      leftSide.setLayout(leftSideLayout);
      
@@ -65,13 +80,17 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
      
      searchBy=new JLabel("                         Search By:");
      andOr=new JLabel("                          And/Or");
-     result=new JLabel("RESULT");
-    		 
+     
+     
+     image = new ImageIcon("../pass.jpg");
+     results=new JLabel("",null, JLabel.CENTER);
+     
+     
+     
      //nameField.addMouseListener(this);
      nameField.addFocusListener(this);
      addressField.addFocusListener(this);
-     searchButton.addActionListener(this);
-     
+     searchButton.addActionListener(this);     
 
           
      leftSide.add(searchBy);
@@ -79,12 +98,12 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
      leftSide.add(andOr);
      leftSide.add(addressField);
      leftSide.add(searchButton);
-     rightSide.add(result);
+     rightSide.add(results);
      mainPanel.add(leftSide);
      mainPanel.add(rightSide);
      //canvas.add(mainPanel, BorderLayout.CENTER);
-     add(mainPanel);     
-    
+     add(mainPanel);
+     
      
  	}//end init()
  
@@ -102,31 +121,58 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  		
  		if(e.getSource()==searchButton)
  		{
- 			/*
- 			JOptionPane.showMessageDialog(
-                    null,
-                    "Search button was clicked!",
-                    "Attention!",
-                    JOptionPane.INFORMATION_MESSAGE,null);
-            */
- 			
- 			
+ 			System.out.println(nameField.getText());
+
  			
  			BusinessTier restaurant=new BusinessTier();
  			
- 			BusinessTierObjects.Restaurant result=restaurant.getRestaurant(nameField.getText());
+ 			ArrayList<BusinessTierObjects.Restaurant> result=restaurant.getRestaurant(nameField.getText());
+ 			System.out.println("After query");
+
+ 			String searchResults=result.get(0).getName()+result.get(0).getAddress()+result.get(0).getResult();
  			
+ 			addressArray=new ArrayList<String>();
+ 			for(BusinessTierObjects.Restaurant r:result)
+ 			{
+ 				System.out.println(r.getName()+r.getAddress()+" "+r.getResult());
+ 				addressArray.add(r.getAddress());
+ 			}
  			
- 			String searchResults=result.getName()+result.getAddress()+result.getResult();
- 			
+ 			/*
  			JOptionPane.showMessageDialog(
                     null,
                     searchResults,
                     "Attention!",
                     JOptionPane.INFORMATION_MESSAGE,null);
+ 			*/
  			
+ 			if(result.size()>1)
+ 			{
+ 				JOptionPane.showMessageDialog(
+ 	                    null,
+ 	                    searchResults,
+ 	                    "Attention!",
+ 	                    JOptionPane.INFORMATION_MESSAGE,null);
+ 				addressStringArray=new String[addressArray.size()];
+ 				for(int x=0;x<addressArray.size();x++)
+ 				{
+ 					addressStringArray[x]=addressArray.get(x);
+ 				}
+ 				
+ 				
+ 			}
  			
- 
+ 			else{
+ 				image=getImage(result.get(0).getResult());
+ 	 			results.setIcon(image);
+ 			}
+ 			
+ 			/*
+ 			JList list = new JList(addressStringArray);
+				JOptionPane.showMessageDialog(
+				  null, list, "Multi-Select Example", JOptionPane.PLAIN_MESSAGE);
+				System.out.println(list.getSelectedIndex());
+		    */
  		}
  		
  		
@@ -205,8 +251,35 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 		return (int)(scaleFactor*getHeight());
 	}
 	
+	public static BufferedImage resize(BufferedImage image, int width, int height) {
+	    BufferedImage bi = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);
+	    Graphics2D g2d = (Graphics2D) bi.createGraphics();
+	    g2d.addRenderingHints(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
+	    g2d.drawImage(image, 0, 0, width, height, null);
+	    g2d.dispose();
+	    return bi;
+	}
 	
+	public ImageIcon getImage(String result)
+	{
+		BufferedImage img=null;
+			try
+			{
+				img=ImageIO.read(new File("../"+result+".jpg"));
+			}
+			catch (IOException e1)
+			{
+				e1.printStackTrace();
+			}
+			BufferedImage resizedImg=resize(img,150,60);
+			ImageIcon returnImage=new ImageIcon(resizedImg);
+			return returnImage;		
+	}
 	
+	public void valueChanged(ListSelectionEvent l)
+	{
+		
+	}
 	
 	
 	
