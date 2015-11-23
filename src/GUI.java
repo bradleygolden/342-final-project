@@ -127,13 +127,25 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  		
  		if(e.getSource()==searchButton)
  		{
- 			System.out.println(nameField.getText());
+ 			String userSpecifiedName=nameField.getText();
+ 			System.out.println(userSpecifiedName);
+ 			
+ 			if(userSpecifiedName.equals("Name"))
+ 			{
+ 				JOptionPane.showMessageDialog(
+ 	                    null,
+ 	                    "Please enter a facility name!",
+ 	                    "Error!",
+ 	                    JOptionPane.ERROR_MESSAGE,null);
+ 				repaint();
+ 				return;
+ 			}
 
  			
  			BusinessTier restaurant=new BusinessTier();
  			
- 			ArrayList<BusinessTierObjects.Restaurant> result=restaurant.getRestaurant(nameField.getText());
- 			System.out.println("After query");
+ 			ArrayList<BusinessTierObjects.Restaurant> result=restaurant.getRestaurant(userSpecifiedName);
+ 			System.out.println("Query Successful");
 
  			//String searchResults=result.get(0).getName()+result.get(0).getAddress()+result.get(0).getResult();
  			
@@ -150,8 +162,9 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  			{
  				JOptionPane.showMessageDialog(
  	                    null,
- 	                    "More than one facility with that name was found. "
- 	                    + "Please chooose the facility from among the following options.",
+ 	                    "More than one "+userSpecifiedName+" was found. "
+ 	                    + "Please choose the desired "+ 
+ 	                    		userSpecifiedName+" from among the following addresses.",
  	                    "Attention!",
  	                    JOptionPane.INFORMATION_MESSAGE,null);
  				addressStringArray=new String[addressArray.size()];
@@ -163,17 +176,18 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  				JComboBox list=new JComboBox(addressStringArray);
  	 			//JList list = new JList(addressStringArray);
  				JOptionPane.showMessageDialog(
- 					  null, list, "Multi-Select Example", JOptionPane.PLAIN_MESSAGE);
+ 					  null, list, "Choose an address:", 
+ 					  JOptionPane.PLAIN_MESSAGE);
  				int selectedIndex=list.getSelectedIndex();
  				System.out.println(list.getSelectedIndex());
  				
  				addressField.setText(addressStringArray[selectedIndex]);
  				
- 				name.setText("Name of facility: "+nameField.getText());
+ 				name.setText("Name of facility: "+userSpecifiedName);
  				address.setText("Address: "+addressStringArray[selectedIndex]);
  				
  				
- 				result=restaurant.getRestaurant(nameField.getText());
+ 				result=restaurant.getRestaurant(userSpecifiedName);
  				image=getImage(result.get(0).getResult());
  	 			results.setIcon(image);
  			}
