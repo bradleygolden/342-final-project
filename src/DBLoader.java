@@ -16,7 +16,6 @@ public class DBLoader {
 	StringBuilder batch;
 	String[] nextLine;
 	CSVReader reader;
-	public int linesLoaded = 0;
 
 	public DBLoader() {
 		file = "";
@@ -110,18 +109,28 @@ public class DBLoader {
 				inspection.Type = nextLine[11];
 				inspection.Violations = nextLine[13];
 				
-				sqlQuery = String.format("INSERT INTO %s "
-						+ "(%s, %s, %s, %s, %s, %s) "
-						+ "OUTPUT inserted.FacilityID "
-						+ "VALUES(%s, %s, '%s', '%s', '%s', '%s'); ",
-						"Inspections", 
-						"InspectionID", "FacilityID", "Date", "Result", "Type", "Violations",
-						inspection.InspectionID, inspection.FacilityID, inspection.Date, 
-						inspection.Result, inspection.Type, inspection.Violations);
+				// check that the inspection does not already exists in the database
+				sqlQuery = String.format("SELECT InspectionID FROM Inspections WHERE "
+						+ " InspectionID=%s", inspection.InspectionID + "");
 				
-				dt.executeNonQuery(sqlQuery);
+				result = dt.executeScalarQuery(sqlQuery);
 				
-				linesLoaded++;
+				// query doesn't exist in the database
+				// add it
+				if (result == null)
+				{
+					sqlQuery = String.format("INSERT INTO %s "
+							+ "(%s, %s, %s, %s, %s, %s) "
+							+ "OUTPUT inserted.FacilityID "
+							+ "VALUES(%s, %s, '%s', '%s', '%s', '%s'); ",
+							"Inspections", 
+							"InspectionID", "FacilityID", "Date", "Result", "Type", "Violations",
+							inspection.InspectionID, inspection.FacilityID, inspection.Date, 
+							inspection.Result, inspection.Type, inspection.Violations);
+					
+					dt.executeNonQuery(sqlQuery);
+				}
+				
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -180,7 +189,6 @@ public class DBLoader {
 		DBLoader loader = new DBLoader();
 		loader.setFile("/Users/bradleygolden/Development/342-final-project/food_inspections.csv");
 		loader.loadFile();
-		System.out.println("Lines loaded: " + loader.linesLoaded);
 	}
 
 }
