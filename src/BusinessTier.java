@@ -47,7 +47,8 @@ public class BusinessTier {
 		
 		//Build the sql string
 		sql = String.format("$select=aka_name,results,address &$where=aka_name='%s'", businessName);
-		
+		//sql = String.format("$select=aka_name,results,violations &$where=aka_name='MAKOTO'");
+		System.out.println(sql);
 		try
 		{
 			json = aSodaTier.executeQuery(sql);
@@ -103,6 +104,7 @@ public class BusinessTier {
 		try
 		{
 			json = aSodaTier.executeQuery(sql);
+			
 			
 			
 		}
