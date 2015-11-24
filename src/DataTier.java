@@ -244,7 +244,7 @@ public class DataTier implements Backend<ResultSet, String>
 	 */
 	public static void main(String[] args) 
 	{
-		DataTier dt = new DataTier("/Users/bradleygolden/Development/342-final-project/dbText.txt");
+		DataTier dt = new DataTier("dbText.txt");
 		
 		System.out.println("Database connection status: " + dt.testConnection());
 		
