@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.Scanner;
 
 /**
- * Provides access to a database
+ * Provides access to a database.
  * 
  * @author Bradley Golden
  *
@@ -58,6 +58,8 @@ public class DataTier implements Backend<ResultSet, String>
 	 * <p>
 	 * This function in particular is used to get the username and password for a
 	 * database.
+	 * <p>
+	 * This function is useful for hiding user login information within this program.
 	 * 
 	 * @param dbTextPath (required) The path of the file to be read.
 	 */
@@ -68,8 +70,8 @@ public class DataTier implements Backend<ResultSet, String>
 		{
 			file = new Scanner(new File(dbTextPath));
 			
-			this.username = file.next();
-			this.password = file.next();
+			this.username = file.next(); // get username from the text file
+			this.password = file.next(); // get the password form the text file
 		    
 			file.close();
 		    
@@ -143,8 +145,8 @@ public class DataTier implements Backend<ResultSet, String>
 	 */
 	@Override
 	public ResultSet executeQuery(String... args) {
-		String query;
-		String selectSql;
+		String query; // the query to be executed
+		String selectSql; // same as the query to be executed
 		
 		query = args[0];
 		
@@ -159,10 +161,6 @@ public class DataTier implements Backend<ResultSet, String>
         catch (Exception e) 
 		{
             resultSet = null; // query failed
-        }
-        finally 
-        {
-            //closeDB(); // close database connection
         }
 		
 		return resultSet;
@@ -250,41 +248,23 @@ public class DataTier implements Backend<ResultSet, String>
 		
 		System.out.println("Database connection status: " + dt.testConnection());
 		
-		// TEST Non Query Queries
-		//dt.executeNonQuery(("CREATE TABLE Test ( ID INT PRIMARY KEY);"));
-		//dt.executeNonQuery("INSERT INTO Test (ID) VALUES (1)");
-		
 		// TEST Scalar Queries
-		//Object result = dt.executeScalarQuery("SELECT count(*) FROM Facilities");
-		
-		//System.out.println(result.toString());
-		
-		//Object result2 = dt.executeScalarQuery("SELECT SCOPE_IDENTITY() FROM Facilities");
-		
-		//System.out.println(result2.toString());
+		Object result = dt.executeScalarQuery("SELECT count(*) FROM FoodInspections");
+		System.out.println(result.toString());
 		
 		// TEST Query
-		/*
-		ResultSet rs = dt.executeQuery("SELECT * FROM Facilities");
+		ResultSet rs = dt.executeQuery("SELECT AKA_Name FROM FoodInspections WHERE Results = 'FAIL'");
 		
 		try {
 			while (rs.next())
 			{
-				System.out.println(rs.getInt("FacilityID") + "");
+				System.out.println(rs.getString("AKA_Name") + "");
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		dt.closeDB();
-		*/
-		
-		String query = "INSERT INTO Facilities (Name, Type, Address, Risk) OUTPUT inserted.FacilityID VALUES ('Bradley', 'Restaurant', '1234 W Nonsense', 101)";
-		Object result = dt.executeScalarQuery(query);
-		System.out.println(result.toString());
-		//SELECT * FROM Facilities WHERE Name = 'Bradley'
-		
-		
-		
+		// IMPORTANT NOTE: You must use closeDB after every "executeQuery" method call. 
+		// You do not need to call closeDB after executeNonQuery and executeScalarQuery
+		dt.closeDB(); // close the database and remove access to the result set
 	}
 }
