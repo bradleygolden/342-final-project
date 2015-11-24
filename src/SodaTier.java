@@ -1,10 +1,7 @@
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Scanner;
-
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.json.JSONArray;
 
 
