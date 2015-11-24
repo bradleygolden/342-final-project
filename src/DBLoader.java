@@ -1,66 +1,38 @@
-import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.opencsv.CSVReader;
 
+/**
+ * Loads a csv file into an SQL AZURE database.
+ * @author bradleygolden
+ *
+ */
 public class DBLoader {
 
-	private String file;
-	private int batchSize = 0;
-	private int batchMax = 10;
-	StringBuilder batch;
-	String[] nextLine;
-	CSVReader reader;
+	String[] nextLine; // one line the text file
+	CSVReader reader; // CSVReader object used to parse CSV file
 
+	/**
+	 * Creates DBLoader Object and initialized instance variables to null.
+	 */
 	public DBLoader() {
-		file = "";
+
 		nextLine = null;
 		reader = null;
 	}
-
-	private void sendBatch() {
-		JSONObject jObj;
-		JSONArray jArr;
-
-		try {
-			jObj = new JSONObject(batch.toString());
-			jArr = new JSONArray(jObj.getJSONArray("data").toString());
-		} catch (JSONException e) {
-			e.printStackTrace();
-			jArr = null;
-		}
-	}
-
-	private void resetBatch() {
-		batch = new StringBuilder();
-		batchSize = 0;
-	}
-
-	private void buildBatch(String line) {
-		batch.append(line);
-		batchSize++;
-	}
-
-	private Boolean batchLimit() {
-		return (batchSize == batchMax);
-	}
-
-	public void setFile(String file) {
-		this.file = file;
-	}
 	
-	public void loadFile()
+	/**
+	 * Loads a given csv file into a database
+	 * @param file The path of the file to be parsed.
+	 */
+	public void loadFile(String file)
 	{	
-		DataTier dt = new DataTier("/Users/bradleygolden/Development/342-final-project/dbText.txt");
-		Facility facility;
-		Inspection inspection;
-		String sqlQuery;
-		Object result;
+		// Create DataTier object to be used to load the data
+		// to the database
+		DataTier dt = new DataTier(file);
+		Facility facility; // facility object
+		Inspection inspection; // inspection object
+		String sqlQuery; // query string
+		Object result; // result of the query string
 		
 		try {
 			reader = new CSVReader(
@@ -137,14 +109,23 @@ public class DBLoader {
 		}
 	}
 	
+	/**
+	 * Simulates a Facility object in the database.
+	 * @author bradleygolden
+	 *
+	 */
 	private class Facility {
 		
-		public int FacilityID;
-		public String Name;
-		public String Type;
-		public String Address;
-		public String Risk;
+		public int FacilityID; // primary key
+		public String Name; // name of the facility
+		public String Type; // type of facility
+		public String Address; // address of the facility
+		public String Risk; // risk level of the facility
 		
+		/**
+		 * Creates a facility object with FacilityID = -1,
+		 * Name = "", Type = "", Address = "", Risk = ""
+		 */
 		private Facility()
 		{
 			FacilityID = -1;
@@ -154,20 +135,33 @@ public class DBLoader {
 			Risk = "";
 		}
 		
+		/**
+		 * toString method for the Facilty object. Returns all instance variables as strings.
+		 */
 		public String toString()
 		{
 			return "" + FacilityID + ", " + Name + ", " + Type + ", " + Address + ", " + Risk;
 		}
 	}
 	
+	/**
+	 * Simulates an Inspection object in the database.
+	 * @author bradleygolden
+	 *
+	 */
 	private class Inspection {
-		public int InspectionID;
-		public int FacilityID;
-		public String Date;
-		public String Result;
-		public String Type;
-		public String Violations;
+		public int InspectionID; // primary key
+		public int FacilityID; // foreign key to reference facilities
+		public String Date; // date inspection was performed
+		public String Result; // result of inspection
+		public String Type; // type of inspection
+		public String Violations; // violations incurred (if any)
 		
+		/**
+		 * Creates an Inspection object with InspectionID = -1,
+		 * FacilityID = -1, Date = "", Result = "", Type = "", 
+		 * Violations = ""
+		 */
 		private Inspection()
 		{
 			InspectionID = -1;
@@ -178,17 +172,23 @@ public class DBLoader {
 			Violations = "";
 		}
 		
+		/**
+		 * toString method for the Inspection object. Returns all instance variables as strings.
+		 */
 		public String toString()
 		{
 			return "" + InspectionID + ", " + FacilityID + ", " + Date + ", " + Result + ", " + Type + ", " + Violations;
 		}
 	}
 
+	/**
+	 * Test driver for the DBLoader object
+	 * @param args Command line arguments
+	 */
 	public static void main(String[] args) {
 
 		DBLoader loader = new DBLoader();
-		loader.setFile("/Users/bradleygolden/Development/342-final-project/food_inspections.csv");
-		loader.loadFile();
+		//loader.loadFile("/Users/bradleygolden/Development/342-final-project/food_inspections.csv");
 	}
 
 }
