@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.Scanner;
 
 /**
- * Provides access to a database
+ * Provides access to a database.
  * 
  * @author Bradley Golden
  *
@@ -19,7 +19,7 @@ public class DataTier implements Backend<ResultSet, String>
 	//
     private Connection connection;
     private Statement statement;
-    private ResultSet resultSet;
+    private ResultSet resultSet; // points to results of database query
     private PreparedStatement prepStatement;
     
     private String password; // password used to connect to database
@@ -36,6 +36,7 @@ public class DataTier implements Backend<ResultSet, String>
 		username = "";
 		readDBText(dbTextPath); // get password and username from dbTextPath
 		
+		// build the connection string to connect to the database
 		connectionString = String.format(
             "jdbc:sqlserver://cvfqhjtf8t.database.windows.net:1433;"
             + "database=FoodInspections;"
@@ -50,7 +51,6 @@ public class DataTier implements Backend<ResultSet, String>
 		statement = null;
 		resultSet = null;
 		prepStatement = null;
-		
 	}
 	
 	/**
@@ -58,6 +58,8 @@ public class DataTier implements Backend<ResultSet, String>
 	 * <p>
 	 * This function in particular is used to get the username and password for a
 	 * database.
+	 * <p>
+	 * This function is useful for hiding user login information within this program.
 	 * 
 	 * @param dbTextPath (required) The path of the file to be read.
 	 */
@@ -68,8 +70,8 @@ public class DataTier implements Backend<ResultSet, String>
 		{
 			file = new Scanner(new File(dbTextPath));
 			
-			this.username = file.next();
-			this.password = file.next();
+			this.username = file.next(); // get username from the text file
+			this.password = file.next(); // get the password form the text file
 		    
 			file.close();
 		    
@@ -103,7 +105,6 @@ public class DataTier implements Backend<ResultSet, String>
 	private void closeDB()
 	{
         // Close the connections after the data has been handled.
-        if (resultSet != null) try { resultSet.close(); } catch(Exception e) {}
         if (statement != null) try { statement.close(); } catch(Exception e) {}
         if (connection != null) try { connection.close(); } catch(Exception e) {}
         if (prepStatement != null) try {prepStatement.close(); } catch(Exception e){}
@@ -122,7 +123,7 @@ public class DataTier implements Backend<ResultSet, String>
 		
 		try 
 		{
-			isConnected = connection.isValid(30);
+			isConnected = connection.isValid(30); // check that connection to db is alive
 		} 
 		catch (SQLException e) 
 		{
@@ -144,27 +145,22 @@ public class DataTier implements Backend<ResultSet, String>
 	 */
 	@Override
 	public ResultSet executeQuery(String... args) {
-		String query;
-		String selectSql;
+		String query; // the query to be executed
+		String selectSql; // same as the query to be executed
 		
 		query = args[0];
 		
+		initDB(); // initialize the database
+		
 		try 
 		{
-			initDB(); // initialize the database
-			
             // create and execute a SELECT SQL statement.
             selectSql = query;
             resultSet = statement.executeQuery(selectSql);
         }
         catch (Exception e) 
 		{
-            e.printStackTrace();
             resultSet = null; // query failed
-        }
-        finally 
-        {
-            closeDB(); // close database connection
         }
 		
 		return resultSet;
@@ -184,10 +180,10 @@ public class DataTier implements Backend<ResultSet, String>
 		Object result; // the result to be used
 		
 		query = args[0];
-		
+
+		initDB(); // initialize the database
 		try 
 		{
-			initDB(); // initialize the database
 			
             // create and execute a SELECT SQL statement.
             selectSql = query;
@@ -196,7 +192,7 @@ public class DataTier implements Backend<ResultSet, String>
             // convert result set to object type and extract first value
             if (resultSet.next() ) 
             {  
-                result = resultSet.getObject(0);  
+                result = resultSet.getObject(1);
             }
             else
             {
@@ -208,12 +204,37 @@ public class DataTier implements Backend<ResultSet, String>
             e.printStackTrace();
             result = null; // query failed
         }
-        finally 
-        {
-            closeDB(); // close database connection
-        }
 		
 		return (Object) result;
+	}
+	
+	/**
+	 * Executes a non query against a database.
+	 * <p>
+	 * For example, inserting rows into a table is a "non query".
+	 * 
+	 * @param args[0] (required) Requested query to execute against the database.
+	 * @throws Exception Invalid query.
+	 */
+	public void executeNonQuery(String... args) {
+		String query; // the user inputed sql statement
+		String nonQuerySql; // the sql statement
+		Object result; // the result to be used
+		
+		query = args[0];
+
+		initDB(); // initialize the database
+		try 
+		{
+            // create and execute a non query SQL statement.
+            nonQuerySql = query;
+            statement.executeQuery(nonQuerySql);
+        }
+        catch (Exception e) 
+		{
+        	e.printStackTrace();
+            result = null; // query failed
+        }
 	}
 
 	/**
@@ -224,8 +245,28 @@ public class DataTier implements Backend<ResultSet, String>
 	public static void main(String[] args) 
 	{
 		DataTier dt = new DataTier("/Users/bradleygolden/Development/342-final-project/dbText.txt");
-
+		
 		System.out.println("Database connection status: " + dt.testConnection());
 		
+		// TEST Scalar Queries
+		Object result = dt.executeScalarQuery("SELECT count(*) FROM FoodInspections");
+		System.out.println(result.toString());
+		
+		// TEST Query
+		ResultSet rs = dt.executeQuery("SELECT AKA_Name FROM FoodInspections WHERE Results = 'FAIL'");
+		
+		try {
+			while (rs.next())
+			{
+				System.out.println(rs.getString("AKA_Name") + "");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		// IMPORTANT NOTE: You must use closeDB after every "executeQuery" method call. 
+		// You do not need to call closeDB after executeNonQuery and executeScalarQuery
+		// This is because ResultSet is simply a pointer to the database and does not exist
+		// strictly in local memory.
+		dt.closeDB(); // close the database and remove access to the result set
 	}
 }

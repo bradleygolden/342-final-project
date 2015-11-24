@@ -1,6 +1,7 @@
 *.class
 
 *.json
+*.csv
 dbText.txt
 
 ### Mobile Tools for Java (J2ME)
