@@ -19,7 +19,7 @@ public class DataTier implements Backend<ResultSet, String>
 	//
     private Connection connection;
     private Statement statement;
-    private ResultSet resultSet;
+    private ResultSet resultSet; // points to results of database query
     private PreparedStatement prepStatement;
     
     private String password; // password used to connect to database
@@ -36,6 +36,7 @@ public class DataTier implements Backend<ResultSet, String>
 		username = "";
 		readDBText(dbTextPath); // get password and username from dbTextPath
 		
+		// build the connection string to connect to the database
 		connectionString = String.format(
             "jdbc:sqlserver://cvfqhjtf8t.database.windows.net:1433;"
             + "database=FoodInspections;"
@@ -50,7 +51,6 @@ public class DataTier implements Backend<ResultSet, String>
 		statement = null;
 		resultSet = null;
 		prepStatement = null;
-		
 	}
 	
 	/**
@@ -123,7 +123,7 @@ public class DataTier implements Backend<ResultSet, String>
 		
 		try 
 		{
-			isConnected = connection.isValid(30);
+			isConnected = connection.isValid(30); // check that connection to db is alive
 		} 
 		catch (SQLException e) 
 		{
@@ -265,6 +265,8 @@ public class DataTier implements Backend<ResultSet, String>
 		}
 		// IMPORTANT NOTE: You must use closeDB after every "executeQuery" method call. 
 		// You do not need to call closeDB after executeNonQuery and executeScalarQuery
+		// This is because ResultSet is simply a pointer to the database and does not exist
+		// strictly in local memory.
 		dt.closeDB(); // close the database and remove access to the result set
 	}
 }
