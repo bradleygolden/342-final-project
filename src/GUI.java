@@ -196,10 +196,10 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  		resizedImg=resize(titleImg,(int)(appWidth/1.5),appHeight/10);
  		titleImage=new ImageIcon(resizedImg);
  		titleImageLabel.setIcon(titleImage);
+ 		titleImageLabel.setFont(new Font("Serif", Font.BOLD, (appWidth/35+appHeight/35)/2));
  		
  		//Make the font scaled
  		Font f=new Font("Serif", Font.BOLD, (appWidth/38+appHeight/38)/2);
- 		titleImageLabel.setFont(f);
  		searchBy.setFont(f);
  		nameField.setFont(f);
  		andOr.setFont(f);
