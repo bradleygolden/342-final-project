@@ -102,7 +102,7 @@ public class DataTier implements Backend<ResultSet, String>
 	/**
 	 * Closes a database by checking all possible database instance variables and closing them.
 	 */
-	private void closeDB()
+	public void closeDB()
 	{
         // Close the connections after the data has been handled.
         if (statement != null) try { statement.close(); } catch(Exception e) {}
