@@ -44,6 +44,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	private String[] addressStringArray;	//Holds all the addresses of a facility with multiple names
  	private int appWidth;					//Holds the current applet width
  	private int appHeight;					//Holds the current applet height
+ 	private Color backgroundColor;			//Color of the background
  
  //initialize the applet and prompt user for inputs
  @Override
@@ -59,9 +60,14 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 	 GridLayout rightSideLayout;
 	 GridLayout mainPanelLayout;
 	 BorderLayout canvasPanelLayout;
-     
+	
 	 //Set the initial size to 600x500
 	 setSize(600,500);
+	 
+	 //Set the color to a custom color
+	 //backgroundColor=new Color(126,209,241);
+	 backgroundColor=new Color(202,242,255);
+
 	 
      //Create panels to organize appearance
      mainPanel=new JPanel();
@@ -128,6 +134,13 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
      addressField.addFocusListener(this);
      searchButton.addActionListener(this);     
 
+     //Set the background to the custom color
+     mainPanel.setBackground(backgroundColor);
+     leftSide.setBackground(backgroundColor);
+     rightSide.setBackground(backgroundColor);
+     canvasPanel.setBackground(backgroundColor);
+     setBackground(backgroundColor);
+		 
      //Add elements to the left and right side panels
      leftSide.add(searchBy);
      leftSide.add(nameField);
@@ -158,6 +171,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	{
  		super.paint(g);
  		
+ 		//Get the current width and height of the applet
  		appWidth=getWidth();
  		appHeight=getHeight();
  		
@@ -220,6 +234,9 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  			//See if the name field is not blank
  			if(!(userSpecifiedName.equals("Name")))
  			{
+ 				//Set the name of the name label
+ 	 			name.setText("Name of facility: "+userSpecifiedName);
+ 	 			
  				//Query the database based on the name of the facility
  	 			result=bt.getRestaurant(userSpecifiedName);
  	 			
@@ -257,6 +274,10 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  			//Query the database using the address since there was no name specified
  			else
  			{
+ 				//Set the name of the name label
+ 	 			name.setText("Name of facility: ");
+ 	 			
+ 	 			address.setText("Address: "+userSpecifiedAddress);
 	 			//Query the database based on the address of the facility
 	 	 		//TODO: Waiting for the address-query method to be completed
 
@@ -304,11 +325,8 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  				//Get the index of the selected address
  				int selectedIndex=list.getSelectedIndex();
  				
- 				System.out.println(list.getSelectedIndex());
- 				
  				
  				//Set the text of the address label
- 				name.setText("Name of facility: "+userSpecifiedName);
  				address.setText("Address: "+addressStringArray[selectedIndex]);
  				
  				
@@ -316,6 +334,8 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 	 	 		//TODO: Waiting for the address-query method to be completed
  			
  			}
+ 			
+ 			System.out.println("Result is "+result.get(0).getResult());
  			
  			//Get the corresponding image to the result of the query
  			image=getImage(result.get(0).getResult());
@@ -410,8 +430,26 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 		
 		try
 		{
-			//Read in a file with the given file name
-			img=ImageIO.read(new File("../"+result+".jpg"));
+			switch(result)
+			{
+				case "Pass":
+					img=ImageIO.read(new File("../pass.jpg"));
+					break;
+				case "Pass w/ Conditions":
+					img=ImageIO.read(new File("../pass2.jpg"));
+					break;
+				case "Out of Business":
+					img=ImageIO.read(new File("../noBusiness.jpg"));
+					break;
+				case "Fail":
+					img=ImageIO.read(new File("../fail.jpg"));
+					break;
+				case "No Entry":
+					img=ImageIO.read(new File("../noEntry.jpg"));
+					break;
+				default:
+					img=ImageIO.read(new File("../noData.jpg"));
+			}
 		}
 		catch (IOException e1)
 		{
