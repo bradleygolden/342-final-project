@@ -34,6 +34,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	private JLabel results;					//Label for displaying the result of the inspection
  	private JLabel name;					//Displays the name of the queried facility
  	private JLabel address;					//Displays the address of the queried facility
+ 	private JLabel date;					//Displays the date of the queried facility
  	private JLabel titleImageLabel;			//Label for titleImage
  	private ImageIcon titleImage;			//ImageIcon for the title logo
  	private ImageIcon image;				//Holds the image for result status
@@ -80,7 +81,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 	     
 	     //Set up the right half
 	     rightSideLayout=new GridLayout(5,1);
-	     rightSideLayout.setVgap(getHeight()/10);
+	     rightSideLayout.setVgap(getHeight()/12);
 	     rightSide.setLayout(rightSideLayout);
 	     
 	     //Set up the main panel that covers the canvas
@@ -108,6 +109,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 	     andOr=new JLabel("                          And/Or");
 	     name=new JLabel("Name of facility: ");
 	     address=new JLabel("Address: ");
+	     date=new JLabel("Date of inspection: ");
 	     
 	     //Initialize the picture to be used in the results JLabel
 	     image = new ImageIcon("../pass.jpg");
@@ -158,6 +160,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 	     rightSide.add(results);
 	     rightSide.add(name);
 	     rightSide.add(address);
+	     rightSide.add(date);
 	     
 	     //Add the right side and left side to the main panel
 	     mainPanel.add(leftSide);
@@ -207,8 +210,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  		searchButton.setFont(f);
  		name.setFont(f);
  		address.setFont(f);
- 		
- 		
+ 		date.setFont(f); 		
  		
  	}//end paint()
  	
