@@ -44,8 +44,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  public void init()
  {
 	 
-	 setSize(600,500);
-	 
+	 //Panels and GridLayouts to be used
 	 JPanel mainPanel;
 	 JPanel leftSide;
 	 JPanel rightSide;
@@ -54,49 +53,52 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 	 GridLayout rightSideLayout;
 	 GridLayout mainPanelLayout;
      
-     //setLayout(new BorderLayout(20,20));
-     //panels to organize appearance
-     
+	 //Set the initial size to 600x500
+	 setSize(600,500);
+	 
+     //Create panels to organize appearance
 	 canvas=new JPanel();
      mainPanel=new JPanel();
      leftSide=new JPanel();
      rightSide=new JPanel();
      
+     //Set up the left half
      leftSideLayout=new GridLayout(6,1);
      leftSideLayout.setVgap(getHeight()/10);
      leftSide.setLayout(leftSideLayout);
      
+     //Set up the right half
      rightSideLayout=new GridLayout(5,1);
      rightSideLayout.setVgap(getHeight()/10);
      rightSide.setLayout(rightSideLayout);
      
+     //Set up the main panel that covers the canvas
      mainPanelLayout=new GridLayout(1,2);
      mainPanelLayout.setHgap(getWidth()/10);
      mainPanel.setLayout(mainPanelLayout);
-     canvas.setLayout(new BorderLayout(20,20));
      
-     
+     //Create the search button and search text fields
      searchButton=new JButton("Search!");
      nameField=new JTextField("Name",10);
      addressField=new JTextField("Street Address",20);
      
+     //Create the descriptive labels
      searchBy=new JLabel("                         Search By:");
      andOr=new JLabel("                          And/Or");
      name=new JLabel("Name of facility: ");
      address=new JLabel("Address: ");
      
-     
+     //Initialize the picture to be used
      image = new ImageIcon("../pass.jpg");
      results=new JLabel("",null, JLabel.CENTER);
      
-     
-     
-     //nameField.addMouseListener(this);
+     //Add the text fields and search button to 
+     //their appropriate event listeners
      nameField.addFocusListener(this);
      addressField.addFocusListener(this);
      searchButton.addActionListener(this);     
 
-          
+     //Add elements to the left and right side panels
      leftSide.add(searchBy);
      leftSide.add(nameField);
      leftSide.add(andOr);
@@ -105,13 +107,16 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
      rightSide.add(results);
      rightSide.add(name);
      rightSide.add(address);
+     
+     //Add the right side and left side to the main panel
      mainPanel.add(leftSide);
      mainPanel.add(rightSide);
-     //canvas.add(mainPanel, BorderLayout.CENTER);
+     
+     //Add the main panel to the canvas
      add(mainPanel);
      
      
- 	}//end init()
+ }//end init()
  
  
  	@Override
@@ -124,29 +129,73 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	@Override 
  	public void actionPerformed(ActionEvent e)
  	{
- 		
- 		if(e.getSource()==searchButton)
+ 		//Check if the search button was clicked
+ 		if(e.getSource()==searchButton) 
  		{
+ 			//Holds an instance of BusinessTier
+ 			BusinessTier bt;
+ 			
+ 			//Create container to hold the results
+ 			ArrayList<BusinessTierObjects.Restaurant> result;
+ 			
+ 			
+ 			//Get the name of the facility specified by the user
  			String userSpecifiedName=nameField.getText();
+ 			
+ 			//Get the address of the facility specified by the user
+ 			String userSpecifiedAddress=addressField.getText();
+ 			
  			System.out.println(userSpecifiedName);
  			
- 			if(userSpecifiedName.equals("Name"))
+ 			//Check if both text fields are empty
+ 			if(userSpecifiedName.equals("Name") && 
+ 					userSpecifiedAddress.equals("Street Address"))
  			{
+ 				//Print an error message and return back to the GUI
  				JOptionPane.showMessageDialog(
  	                    null,
- 	                    "Please enter a facility name!",
+ 	                    "Please enter a facility name or an address!",
  	                    "Error!",
  	                    JOptionPane.ERROR_MESSAGE,null);
  				repaint();
  				return;
  			}
 
+ 			//Instantiate the BusinessTier class
+ 			bt=new BusinessTier();
  			
- 			BusinessTier restaurant=new BusinessTier();
+ 			if(!(userSpecifiedName.equals("Name")))
+ 			{
+ 				//Query the database based on the name of the facility
+ 	 			result=bt.getRestaurant(userSpecifiedName);
+ 	 			
+ 	 			//Check if the result was empty
+ 	 			if(result==null)
+ 	 			{
+ 	 				//Result was empty, so show error message
+ 	 				JOptionPane.showMessageDialog(
+ 	 	                    null,
+ 	 	                    "No restaurant named "+ 
+ 	 	                    		userSpecifiedName+" was found in the database.",
+ 	 	                    "Attention!",
+ 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+ 	 				
+ 	 			}
+ 	 			
+ 	 			if(!(userSpecifiedName.equals("Street Address")))
+ 	 			{
+ 	 				
+ 	 			}
+ 				
+ 			}
+ 			//Query the database based on the name of the facility
+ 			result=bt.getRestaurant(userSpecifiedName);
  			
- 			ArrayList<BusinessTierObjects.Restaurant> result=restaurant.getRestaurant(userSpecifiedName);
  			System.out.println("Query Successful");
-
+ 			
+ 			
+ 			
+ 			
  			//String searchResults=result.get(0).getName()+result.get(0).getAddress()+result.get(0).getResult();
  			
  			addressArray=new ArrayList<String>();
@@ -176,7 +225,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  				JComboBox list=new JComboBox(addressStringArray);
  	 			//JList list = new JList(addressStringArray);
  				JOptionPane.showMessageDialog(
- 					  null, list, "Choose an address:", 
+ 					  null, list, "Choose an address:",
  					  JOptionPane.PLAIN_MESSAGE);
  				int selectedIndex=list.getSelectedIndex();
  				System.out.println(list.getSelectedIndex());
@@ -187,7 +236,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  				address.setText("Address: "+addressStringArray[selectedIndex]);
  				
  				
- 				result=restaurant.getRestaurant(userSpecifiedName);
+ 				result=bt.getRestaurant(userSpecifiedName);
  				image=getImage(result.get(0).getResult());
  	 			results.setIcon(image);
  			}
@@ -197,8 +246,6 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	 			results.setIcon(image);
  			}
  		}
- 		
- 		
  		
  		repaint();
  	}
