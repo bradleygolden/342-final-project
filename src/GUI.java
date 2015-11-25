@@ -46,124 +46,127 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	private int appHeight;					//Holds the current applet height
  	private Color backgroundColor;			//Color of the background
  
- //initialize the applet and prompt user for inputs
- @Override
- public void init()
- {
-	 
-	 //Panels and GridLayouts to be used
-	 JPanel mainPanel;
-	 JPanel leftSide;
-	 JPanel rightSide;
-	 JPanel canvasPanel;
-	 GridLayout leftSideLayout;
-	 GridLayout rightSideLayout;
-	 GridLayout mainPanelLayout;
-	 BorderLayout canvasPanelLayout;
-	
-	 //Set the initial size to 600x500
-	 setSize(600,500);
-	 
-	 //Set the color to a custom color
-	 //backgroundColor=new Color(126,209,241);
-	 backgroundColor=new Color(202,242,255);
-
-	 
-     //Create panels to organize appearance
-     mainPanel=new JPanel();
-     leftSide=new JPanel();
-     rightSide=new JPanel();
-     canvasPanel=new JPanel();
-     
-     //Set up the left half
-     leftSideLayout=new GridLayout(6,1);
-     leftSideLayout.setVgap(getHeight()/10);
-     leftSide.setLayout(leftSideLayout);
-     
-     //Set up the right half
-     rightSideLayout=new GridLayout(5,1);
-     rightSideLayout.setVgap(getHeight()/10);
-     rightSide.setLayout(rightSideLayout);
-     
-     //Set up the main panel that covers the canvas
-     mainPanelLayout=new GridLayout(1,2);
-     mainPanelLayout.setHgap(getWidth()/10);
-     mainPanel.setLayout(mainPanelLayout);
-     
-     //Set up the canvas panel
-     canvasPanelLayout=new BorderLayout();
-     canvasPanelLayout.setVgap(getHeight()/25);
-     canvasPanelLayout.setHgap(0);
-     canvasPanel.setLayout(canvasPanelLayout);
-     
-     //Create the search button and search text fields
-     searchButton=new JButton("Search!");
-     nameField=new JTextField("Name",10);
-     addressField=new JTextField("Street Address",20);
-     
-     //Create the descriptive labels
-     searchBy=new JLabel("                         Search By:");
-     andOr=new JLabel("                          And/Or");
-     name=new JLabel("Name of facility: ");
-     address=new JLabel("Address: ");
-     title=new JLabel("City of Chicago Food Inspection Database");     
-     //Initialize the picture to be used in the results JLabel
-     image = new ImageIcon("../pass.jpg");
-     results=new JLabel("",null, JLabel.CENTER);
-     
-     //Initialize the picture to be used in the title JLabel
-     try 
-     {
-		titleImg=ImageIO.read(new File("../title.jpg"));
-     } 
-     catch (IOException e) 
-     {
-    	 System.out.println("Error opening file.");
-    	 e.printStackTrace();
-     }
-     
-     BufferedImage resizedImg=resize(titleImg,200,38);
-     
-     titleImage=new ImageIcon(resizedImg);
-     titleImageLabel=new JLabel("",titleImage,JLabel.CENTER);
-     
-     
-     //Add the text fields and search button to 
-     //their appropriate event listeners
-     nameField.addFocusListener(this);
-     addressField.addFocusListener(this);
-     searchButton.addActionListener(this);     
-
-     //Set the background to the custom color
-     mainPanel.setBackground(backgroundColor);
-     leftSide.setBackground(backgroundColor);
-     rightSide.setBackground(backgroundColor);
-     canvasPanel.setBackground(backgroundColor);
-     setBackground(backgroundColor);
+	 //initialize the applet and prompt user for inputs
+	 @Override
+	 public void init()
+	 {
+		 //Panels and GridLayouts to be used
+		 JPanel mainPanel;
+		 JPanel leftSide;
+		 JPanel rightSide;
+		 JPanel canvasPanel;
+		 GridLayout leftSideLayout;
+		 GridLayout rightSideLayout;
+		 GridLayout mainPanelLayout;
+		 BorderLayout canvasPanelLayout;
+		
+		 //Set the initial size to 600x500
+		 setSize(600,500);
 		 
-     //Add elements to the left and right side panels
-     leftSide.add(searchBy);
-     leftSide.add(nameField);
-     leftSide.add(andOr);
-     leftSide.add(addressField);
-     leftSide.add(searchButton);
-     rightSide.add(results);
-     rightSide.add(name);
-     rightSide.add(address);
-     
-     //Add the right side and left side to the main panel
-     mainPanel.add(leftSide);
-     mainPanel.add(rightSide);
-     
-     //Add main panel to the canvas panel
-     canvasPanel.add(mainPanel, BorderLayout.CENTER);
-     canvasPanel.add(titleImageLabel, BorderLayout.NORTH);
-     
-     //Add the main panel to the canvas
-     add(canvasPanel);
-     
-     
- }//end init()
+		 //Set the color to a custom color
+		 //backgroundColor=new Color(126,209,241);
+		 backgroundColor=new Color(202,242,255);
+	
+		 
+	     //Create panels to organize appearance
+	     mainPanel=new JPanel();
+	     leftSide=new JPanel();
+	     rightSide=new JPanel();
+	     canvasPanel=new JPanel();
+	     
+	     //Set up the left half
+	     leftSideLayout=new GridLayout(6,1);
+	     leftSideLayout.setVgap(getHeight()/10);
+	     leftSide.setLayout(leftSideLayout);
+	     
+	     //Set up the right half
+	     rightSideLayout=new GridLayout(5,1);
+	     rightSideLayout.setVgap(getHeight()/10);
+	     rightSide.setLayout(rightSideLayout);
+	     
+	     //Set up the main panel that covers the canvas
+	     mainPanelLayout=new GridLayout(1,2);
+	     mainPanelLayout.setHgap(getWidth()/10);
+	     mainPanel.setLayout(mainPanelLayout);
+	     
+	     //Set up the canvas panel
+	     canvasPanelLayout=new BorderLayout();
+	     canvasPanelLayout.setVgap(getHeight()/25);
+	     canvasPanelLayout.setHgap(0);
+	     canvasPanel.setLayout(canvasPanelLayout);
+	     
+	     //Create the search button and search text fields
+	     searchButton=new JButton("Search!");
+	     nameField=new JTextField("Name",10);
+	     addressField=new JTextField("Street Address",20);
+	     
+	     //Set text in text fields as gray
+	     nameField.setForeground(Color.GRAY);
+	     addressField.setForeground(Color.GRAY);
+	     
+	     //Create the descriptive labels
+	     searchBy=new JLabel("                         Search By:");
+	     andOr=new JLabel("                          And/Or");
+	     name=new JLabel("Name of facility: ");
+	     address=new JLabel("Address: ");
+	     title=new JLabel("City of Chicago Food Inspection Database");     
+	     //Initialize the picture to be used in the results JLabel
+	     image = new ImageIcon("../pass.jpg");
+	     results=new JLabel("",null, JLabel.CENTER);
+	     
+	     //Initialize the picture to be used in the title JLabel
+	     try 
+	     {
+			titleImg=ImageIO.read(new File("../title.jpg"));
+	     } 
+	     catch (IOException e) 
+	     {
+	    	 System.out.println("Error opening file.");
+	    	 e.printStackTrace();
+	     }
+	     
+	     BufferedImage resizedImg=resize(titleImg,200,38);
+	     
+	     titleImage=new ImageIcon(resizedImg);
+	     titleImageLabel=new JLabel("",titleImage,JLabel.CENTER);
+	     
+	     
+	     //Add the text fields and search button to 
+	     //their appropriate event listeners
+	     nameField.addFocusListener(this);
+	     addressField.addFocusListener(this);
+	     searchButton.addActionListener(this);     
+	
+	     //Set the background to the custom color
+	     mainPanel.setBackground(backgroundColor);
+	     leftSide.setBackground(backgroundColor);
+	     rightSide.setBackground(backgroundColor);
+	     canvasPanel.setBackground(backgroundColor);
+	     setBackground(backgroundColor);
+			 
+	     //Add elements to the left and right side panels
+	     leftSide.add(searchBy);
+	     leftSide.add(nameField);
+	     leftSide.add(andOr);
+	     leftSide.add(addressField);
+	     leftSide.add(searchButton);
+	     rightSide.add(results);
+	     rightSide.add(name);
+	     rightSide.add(address);
+	     
+	     //Add the right side and left side to the main panel
+	     mainPanel.add(leftSide);
+	     mainPanel.add(rightSide);
+	     
+	     //Add main panel to the canvas panel
+	     canvasPanel.add(mainPanel, BorderLayout.CENTER);
+	     canvasPanel.add(titleImageLabel, BorderLayout.NORTH);
+	     
+	     //Add the main panel to the canvas
+	     add(canvasPanel);
+	     
+	     
+	 }//end init()
  
  
  	@Override
@@ -174,7 +177,6 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  		//Get the current width and height of the applet
  		appWidth=getWidth();
  		appHeight=getHeight();
- 		
  		
  		//Resize the results image to fit the window size
  		BufferedImage resizedImg=resize(img,appWidth/4,appHeight/8);
@@ -356,7 +358,8 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  			//Check if the name field is not blank
  			if(nameField.getText().equals("Name"))
  			{
- 				//Set the name field to blank
+ 				//Set the name field to blank and font to black
+ 				nameField.setForeground(Color.BLACK);
  				nameField.setText("");
  			}
  		}
@@ -367,7 +370,8 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  			//Check if the address field is not blank
  			if(addressField.getText().equals("Street Address"))
  			{
- 				//Set the address field to blank
+ 				//Set the address field to blank and font to black
+ 				addressField.setForeground(Color.BLACK);
  				addressField.setText("");
  			}
  		}
@@ -382,7 +386,8 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  			//Check if the name field is blank
  			if(nameField.getText().equals(""))
  			{
- 				//Set the name field to "Name"
+ 				//Set the name field to "Name" and font to gray
+ 				nameField.setForeground(Color.GRAY);
  				nameField.setText("Name");
  			}
  		}
@@ -393,7 +398,8 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  			//Check if the address field is blank
  			if(addressField.getText().equals(""))
  			{
- 				//Set the address field to "Street Address"
+ 				//Set the address field to "Street Address" and font to gray
+ 				addressField.setForeground(Color.GRAY);
  				addressField.setText("Street Address");
  			}
  		}
