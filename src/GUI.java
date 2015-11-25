@@ -34,7 +34,6 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	private JLabel results;					//Label for displaying the result of the inspection
  	private JLabel name;					//Displays the name of the queried facility
  	private JLabel address;					//Displays the address of the queried facility
- 	private JLabel title;					//Label for the title of the app
  	private JLabel titleImageLabel;			//Label for titleImage
  	private ImageIcon titleImage;			//ImageIcon for the title logo
  	private ImageIcon image;				//Holds the image for result status
@@ -75,7 +74,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 	     canvasPanel=new JPanel();
 	     
 	     //Set up the left half
-	     leftSideLayout=new GridLayout(6,1);
+	     leftSideLayout=new GridLayout(7,1);
 	     leftSideLayout.setVgap(getHeight()/10);
 	     leftSide.setLayout(leftSideLayout);
 	     
@@ -97,8 +96,8 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 	     
 	     //Create the search button and search text fields
 	     searchButton=new JButton("Search!");
-	     nameField=new JTextField("Name",10);
-	     addressField=new JTextField("Street Address",20);
+	     nameField=new JTextField("Enter Restaurant Name",10);
+	     addressField=new JTextField("Enter Restaurant Street Address",20);
 	     
 	     //Set text in text fields as gray
 	     nameField.setForeground(Color.GRAY);
@@ -109,7 +108,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 	     andOr=new JLabel("                          And/Or");
 	     name=new JLabel("Name of facility: ");
 	     address=new JLabel("Address: ");
-	     title=new JLabel("City of Chicago Food Inspection Database");     
+	     
 	     //Initialize the picture to be used in the results JLabel
 	     image = new ImageIcon("../pass.jpg");
 	     results=new JLabel("",null, JLabel.CENTER);
@@ -125,10 +124,16 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 	    	 e.printStackTrace();
 	     }
 	     
+	     //Create a new BufferedImage for resizing 
 	     BufferedImage resizedImg=resize(titleImg,200,38);
 	     
+	     //Set the title image JLabel and text in the proper place.
 	     titleImage=new ImageIcon(resizedImg);
-	     titleImageLabel=new JLabel("",titleImage,JLabel.CENTER);
+	     titleImageLabel=new JLabel("Search for your favorite restaurant in Chicago by "
+	     		+ "entering its name or street address:",titleImage,JLabel.CENTER);
+	     titleImageLabel.setHorizontalTextPosition(JLabel.CENTER);
+	     titleImageLabel.setVerticalTextPosition(JLabel.BOTTOM);
+	     titleImageLabel.setFont(new Font("Serif", Font.BOLD, 16));
 	     
 	     
 	     //Add the text fields and search button to 
@@ -216,8 +221,8 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  			result=null;
  			 			
  			//Check if both text fields are empty
- 			if(userSpecifiedName.equals("Name") && 
- 					userSpecifiedAddress.equals("Street Address"))
+ 			if(userSpecifiedName.equals("Enter Restaurant Name") && 
+ 					userSpecifiedAddress.equals("Enter Restaurant Street Address"))
  			{
  				//Print an error message and return back to the GUI
  				JOptionPane.showMessageDialog(
@@ -234,15 +239,11 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  			
  			
  			//See if the name field is not blank
- 			if(!(userSpecifiedName.equals("Name")))
+ 			if(!(userSpecifiedName.equals("Enter Restaurant Name")))
  			{
- 				//Set the name of the name label
- 	 			name.setText("Name of facility: "+userSpecifiedName);
  	 			
  				//Query the database based on the name of the facility
  	 			result=bt.getRestaurant(userSpecifiedName);
- 	 			
- 	 			System.out.println("Query Successful");
  	 			
  	 			//Check if the result was empty
  	 			if(result==null)
@@ -260,7 +261,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	 			}
  	 			
  	 			//Try to re-query with the address if the address field is not blank
- 	 			if(!(userSpecifiedAddress.equals("Street Address")))
+ 	 			if(!(userSpecifiedAddress.equals("Enter Restaurant Street Address")))
  	 			{
  	 				JOptionPane.showMessageDialog(
  	 	                    null,
@@ -272,6 +273,8 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	 	 			//TODO: Waiting for the address-query method to be completed
  	 			}
  				
+ 	 			//Set the name of the name label
+ 	 			name.setText("Name of facility: "+userSpecifiedName);
  			}
  			//Query the database using the address since there was no name specified
  			else
@@ -356,7 +359,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  		if(f.getSource()==nameField)
  		{
  			//Check if the name field is not blank
- 			if(nameField.getText().equals("Name"))
+ 			if(nameField.getText().equals("Enter Restaurant Name"))
  			{
  				//Set the name field to blank and font to black
  				nameField.setForeground(Color.BLACK);
@@ -368,7 +371,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  		if(f.getSource()==addressField)
  		{
  			//Check if the address field is not blank
- 			if(addressField.getText().equals("Street Address"))
+ 			if(addressField.getText().equals("Enter Restaurant Street Address"))
  			{
  				//Set the address field to blank and font to black
  				addressField.setForeground(Color.BLACK);
@@ -388,7 +391,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  			{
  				//Set the name field to "Name" and font to gray
  				nameField.setForeground(Color.GRAY);
- 				nameField.setText("Name");
+ 				nameField.setText("Enter Restaurant Name");
  			}
  		}
  		
@@ -400,7 +403,7 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  			{
  				//Set the address field to "Street Address" and font to gray
  				addressField.setForeground(Color.GRAY);
- 				addressField.setText("Street Address");
+ 				addressField.setText("Enter Restaurant Street Address");
  			}
  		}
  		repaint();
