@@ -130,10 +130,10 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 	     //Set the title image JLabel and text in the proper place.
 	     titleImage=new ImageIcon(resizedImg);
 	     titleImageLabel=new JLabel("Search for your favorite restaurant in Chicago by "
-	     		+ "entering its name or street address:",titleImage,JLabel.CENTER);
+	     		+ "entering its name and/or street address:",titleImage,JLabel.CENTER);
 	     titleImageLabel.setHorizontalTextPosition(JLabel.CENTER);
 	     titleImageLabel.setVerticalTextPosition(JLabel.BOTTOM);
-	     titleImageLabel.setFont(new Font("Serif", Font.BOLD, 16));
+	     titleImageLabel.setFont(new Font("Serif", Font.BOLD, 15));
 	     
 	     
 	     //Add the text fields and search button to 
@@ -196,6 +196,16 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  		resizedImg=resize(titleImg,(int)(appWidth/1.5),appHeight/10);
  		titleImage=new ImageIcon(resizedImg);
  		titleImageLabel.setIcon(titleImage);
+ 		titleImageLabel.setFont(new Font("Serif", Font.BOLD, (appWidth/35+appHeight/35)/2));
+ 		searchBy.setFont(new Font("Serif", Font.BOLD, (appWidth/38+appHeight/38)/2));
+ 		nameField.setFont(new Font("Serif", Font.BOLD, (appWidth/38+appHeight/38)/2));
+ 		andOr.setFont(new Font("Serif", Font.BOLD, (appWidth/38+appHeight/38)/2));
+ 		addressField.setFont(new Font("Serif", Font.BOLD, (appWidth/38+appHeight/38)/2));
+ 		searchButton.setFont(new Font("Serif", Font.BOLD, (appWidth/38+appHeight/38)/2));
+ 		name.setFont(new Font("Serif", Font.BOLD, (appWidth/38+appHeight/38)/2));
+ 		address.setFont(new Font("Serif", Font.BOLD, (appWidth/38+appHeight/38)/2));
+ 		
+ 		
  		
  	}//end paint()
  	
@@ -473,15 +483,6 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 		//New ImageIcon for the return image
 		ImageIcon returnImage=new ImageIcon(resizedImg);
 		return returnImage;		
-	}
-	
-	
-	public int x(double scaleFactor){
-		return (int)(scaleFactor*getWidth());
-	}
-	
-	public int y(double scaleFactor){
-		return (int)(scaleFactor*getHeight());
 	}
 	
 	//The following are unused methods of the implemented interfaces
