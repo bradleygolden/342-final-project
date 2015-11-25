@@ -32,12 +32,18 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	private JLabel searchBy;				//Label for "Search By"
  	private JLabel andOr;					//Label for "And/Or"
  	private JLabel results;					//Label for displaying the result of the inspection
- 	private JLabel name;					//Holds the name of the queried facility
- 	private JLabel address;					//Holds the address of the queried facility
+ 	private JLabel name;					//Displays the name of the queried facility
+ 	private JLabel address;					//Displays the address of the queried facility
+ 	private JLabel title;					//Label for the title of the app
+ 	private JLabel titleImageLabel;			//Label for titleImage
+ 	private ImageIcon titleImage;			//ImageIcon for the title logo
  	private ImageIcon image;				//Holds the image for result status
- 	private JList<String> locations;		//Holds multiple locations for a given facility
+ 	private BufferedImage img;				//Holds a BufferedImage for the icon
+ 	private BufferedImage titleImg;			//Holds a BufferedImage for the title image
  	private ArrayList<String> addressArray;	//Holds all the addresses of a facility with multiple names
  	private String[] addressStringArray;	//Holds all the addresses of a facility with multiple names
+ 	private int appWidth;					//Holds the current applet width
+ 	private int appHeight;					//Holds the current applet height
  
  //initialize the applet and prompt user for inputs
  @Override
@@ -48,19 +54,20 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 	 JPanel mainPanel;
 	 JPanel leftSide;
 	 JPanel rightSide;
-	 JPanel canvas;
+	 JPanel canvasPanel;
 	 GridLayout leftSideLayout;
 	 GridLayout rightSideLayout;
 	 GridLayout mainPanelLayout;
+	 BorderLayout canvasPanelLayout;
      
 	 //Set the initial size to 600x500
 	 setSize(600,500);
 	 
      //Create panels to organize appearance
-	 canvas=new JPanel();
      mainPanel=new JPanel();
      leftSide=new JPanel();
      rightSide=new JPanel();
+     canvasPanel=new JPanel();
      
      //Set up the left half
      leftSideLayout=new GridLayout(6,1);
@@ -77,6 +84,12 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
      mainPanelLayout.setHgap(getWidth()/10);
      mainPanel.setLayout(mainPanelLayout);
      
+     //Set up the canvas panel
+     canvasPanelLayout=new BorderLayout();
+     canvasPanelLayout.setVgap(getHeight()/25);
+     canvasPanelLayout.setHgap(0);
+     canvasPanel.setLayout(canvasPanelLayout);
+     
      //Create the search button and search text fields
      searchButton=new JButton("Search!");
      nameField=new JTextField("Name",10);
@@ -87,10 +100,27 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
      andOr=new JLabel("                          And/Or");
      name=new JLabel("Name of facility: ");
      address=new JLabel("Address: ");
-     
-     //Initialize the picture to be used
+     title=new JLabel("City of Chicago Food Inspection Database");     
+     //Initialize the picture to be used in the results JLabel
      image = new ImageIcon("../pass.jpg");
      results=new JLabel("",null, JLabel.CENTER);
+     
+     //Initialize the picture to be used in the title JLabel
+     try 
+     {
+		titleImg=ImageIO.read(new File("../title.jpg"));
+     } 
+     catch (IOException e) 
+     {
+    	 System.out.println("Error opening file.");
+    	 e.printStackTrace();
+     }
+     
+     BufferedImage resizedImg=resize(titleImg,200,38);
+     
+     titleImage=new ImageIcon(resizedImg);
+     titleImageLabel=new JLabel("",titleImage,JLabel.CENTER);
+     
      
      //Add the text fields and search button to 
      //their appropriate event listeners
@@ -112,8 +142,12 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
      mainPanel.add(leftSide);
      mainPanel.add(rightSide);
      
+     //Add main panel to the canvas panel
+     canvasPanel.add(mainPanel, BorderLayout.CENTER);
+     canvasPanel.add(titleImageLabel, BorderLayout.NORTH);
+     
      //Add the main panel to the canvas
-     add(mainPanel);
+     add(canvasPanel);
      
      
  }//end init()
@@ -123,6 +157,24 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	public void paint(Graphics g)
  	{
  		super.paint(g);
+ 		
+ 		appWidth=getWidth();
+ 		appHeight=getHeight();
+ 		
+ 		
+ 		//Resize the results image to fit the window size
+ 		BufferedImage resizedImg=resize(img,appWidth/4,appHeight/8);
+ 				
+ 		//New ImageIcon for the resized image
+ 		image=new ImageIcon(resizedImg);
+ 		
+ 		//Set the JLabel as the resized image
+ 		results.setIcon(image);
+ 		
+ 		//Resize the title image to fit the window size
+ 		resizedImg=resize(titleImg,(int)(appWidth/1.5),appHeight/10);
+ 		titleImage=new ImageIcon(resizedImg);
+ 		titleImageLabel.setIcon(titleImage);
  		
  	}//end paint()
  	
@@ -138,15 +190,15 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  			//Create container to hold the results
  			ArrayList<BusinessTierObjects.Restaurant> result;
  			
- 			
  			//Get the name of the facility specified by the user
  			String userSpecifiedName=nameField.getText();
  			
  			//Get the address of the facility specified by the user
  			String userSpecifiedAddress=addressField.getText();
  			
- 			System.out.println(userSpecifiedName);
- 			
+ 			//Initialize result container to null
+ 			result=null;
+ 			 			
  			//Check if both text fields are empty
  			if(userSpecifiedName.equals("Name") && 
  					userSpecifiedAddress.equals("Street Address"))
@@ -164,10 +216,14 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  			//Instantiate the BusinessTier class
  			bt=new BusinessTier();
  			
+ 			
+ 			//See if the name field is not blank
  			if(!(userSpecifiedName.equals("Name")))
  			{
  				//Query the database based on the name of the facility
  	 			result=bt.getRestaurant(userSpecifiedName);
+ 	 			
+ 	 			System.out.println("Query Successful");
  	 			
  	 			//Check if the result was empty
  	 			if(result==null)
@@ -176,39 +232,40 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	 				JOptionPane.showMessageDialog(
  	 	                    null,
  	 	                    "No restaurant named "+ 
- 	 	                    		userSpecifiedName+" was found in the database.",
+ 	 	                    		userSpecifiedName+" was found in the database."
+ 	 	                    				+ " Try entering an address and searching again.",
+ 	 	                    "Attention!",
+ 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+ 	 				repaint();
+ 	 				return;
+ 	 			}
+ 	 			
+ 	 			//Try to re-query with the address if the address field is not blank
+ 	 			if(!(userSpecifiedAddress.equals("Street Address")))
+ 	 			{
+ 	 				JOptionPane.showMessageDialog(
+ 	 	                    null,
+ 	 	                    "Attempting to re-query with the given address...",
  	 	                    "Attention!",
  	 	                    JOptionPane.INFORMATION_MESSAGE,null);
  	 				
- 	 			}
- 	 			
- 	 			if(!(userSpecifiedName.equals("Street Address")))
- 	 			{
- 	 				
+ 	 				//Query the database based on the address of the facility
+ 	 	 			//TODO: Waiting for the address-query method to be completed
  	 			}
  				
  			}
- 			//Query the database based on the name of the facility
- 			result=bt.getRestaurant(userSpecifiedName);
- 			
- 			System.out.println("Query Successful");
- 			
- 			
- 			
- 			
- 			//String searchResults=result.get(0).getName()+result.get(0).getAddress()+result.get(0).getResult();
- 			
- 			addressArray=new ArrayList<String>();
- 			
- 			for(BusinessTierObjects.Restaurant r:result)
+ 			//Query the database using the address since there was no name specified
+ 			else
  			{
- 				//System.out.println(r.getName()+r.getAddress()+" "+r.getResult());
- 				addressArray.add(r.getAddress());
+	 			//Query the database based on the address of the facility
+	 	 		//TODO: Waiting for the address-query method to be completed
+
  			}
- 		
  			
+ 			//Check if the query returned more than one facility
  			if(result.size()>1)
  			{
+ 				//Inform the user that there was more than one facility found
  				JOptionPane.showMessageDialog(
  	                    null,
  	                    "More than one "+userSpecifiedName+" was found. "
@@ -216,78 +273,81 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	                    		userSpecifiedName+" from among the following addresses.",
  	                    "Attention!",
  	                    JOptionPane.INFORMATION_MESSAGE,null);
+ 				
+ 				//Initialize the array of addresses
+ 	 			addressArray=new ArrayList<String>();
+ 	 			
+ 	 			//Fill the array list with all possible addresses
+ 	 			for(BusinessTierObjects.Restaurant r:result)
+ 	 			{
+ 	 				addressArray.add(r.getAddress());
+ 	 			}
+ 	 			
+ 	 			//Array of strings to use with the JComboBox;
+ 	 			//JComboBoxes only accept arrays, not ArrayLists
  				addressStringArray=new String[addressArray.size()];
+ 				
+ 				//Copy the array list into the array
  				for(int x=0;x<addressArray.size();x++)
  				{
  					addressStringArray[x]=addressArray.get(x);
  				}
  				
+ 				//Create a new JComboBox with the given addresses
  				JComboBox list=new JComboBox(addressStringArray);
- 	 			//JList list = new JList(addressStringArray);
+ 				
+ 				//Pop up a window and prompt user to choose an address
  				JOptionPane.showMessageDialog(
  					  null, list, "Choose an address:",
  					  JOptionPane.PLAIN_MESSAGE);
+ 				
+ 				//Get the index of the selected address
  				int selectedIndex=list.getSelectedIndex();
+ 				
  				System.out.println(list.getSelectedIndex());
  				
- 				addressField.setText(addressStringArray[selectedIndex]);
  				
+ 				//Set the text of the address label
  				name.setText("Name of facility: "+userSpecifiedName);
  				address.setText("Address: "+addressStringArray[selectedIndex]);
  				
  				
- 				result=bt.getRestaurant(userSpecifiedName);
- 				image=getImage(result.get(0).getResult());
- 	 			results.setIcon(image);
+ 				//Query the database based on the address of the facility
+	 	 		//TODO: Waiting for the address-query method to be completed
+ 			
  			}
  			
- 			else{
- 				image=getImage(result.get(0).getResult());
- 	 			results.setIcon(image);
- 			}
+ 			//Get the corresponding image to the result of the query
+ 			image=getImage(result.get(0).getResult());
+				
+			//Display the image in the JLabel
+	 		results.setIcon(image);
  		}
  		
  		repaint();
  	}
  
- 	public void itemStateChanged(ItemEvent e)
- 	{
-     
- 		repaint();
- 	}
- 	
- 	public void mouseClicked(MouseEvent e) 
- 	{
- 		/*
- 		if(e.getSource()==nameField)
- 		{
- 			if(nameField.getText().equals("Name"))
- 			{
- 				nameField.setText("");
- 			}
- 			/*
- 			JOptionPane.showMessageDialog(
-                    null,
-                    "Text box was clicked!",
-                    "Attention!",
-                    JOptionPane.INFORMATION_MESSAGE,null);
- 		}
- 		*/
- 	}
     
  	public void focusGained(FocusEvent f)
  	{
+ 		//Check if nameField is selected
  		if(f.getSource()==nameField)
  		{
+ 			//Check if the name field is not blank
  			if(nameField.getText().equals("Name"))
  			{
+ 				//Set the name field to blank
  				nameField.setText("");
  			}
  		}
+ 		
+ 		//Check if addressField is selected
  		if(f.getSource()==addressField)
  		{
+ 			//Check if the address field is not blank
  			if(addressField.getText().equals("Street Address"))
  			{
+ 				//Set the address field to blank
  				addressField.setText("");
  			}
  		}
@@ -296,24 +356,80 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
  	
  	public void focusLost(FocusEvent f)
  	{
+ 		//Check if nameField is de-selected
  		if(f.getSource()==nameField)
  		{
+ 			//Check if the name field is blank
  			if(nameField.getText().equals(""))
  			{
+ 				//Set the name field to "Name"
  				nameField.setText("Name");
  			}
  		}
+ 		
+ 		//Check if addressField is de-selected
  		if(f.getSource()==addressField)
  		{
+ 			//Check if the address field is blank
  			if(addressField.getText().equals(""))
  			{
+ 				//Set the address field to "Street Address"
  				addressField.setText("Street Address");
  			}
  		}
  		repaint();
  	}
 
- 	public int x(double scaleFactor){
+	
+	public static BufferedImage resize(BufferedImage image, int width, int height)
+	//PRE:	image is initalized, width and height > 0
+	//POST:	FCTVAL == a BufferedImage that is resized to size width x height
+	{
+		//Create a new BufferedImage from scratch
+	    BufferedImage bi = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);
+	    
+	    //Create a Graphics2D and convert bi to be able to manipulate it.
+	    Graphics2D g2d = (Graphics2D) bi.createGraphics();
+	    
+	    //Resize the image based on width and height and save it in bi
+	    g2d.addRenderingHints(new RenderingHints(RenderingHints.KEY_RENDERING, 
+	    		RenderingHints.VALUE_RENDER_QUALITY));
+	    g2d.drawImage(image, 0, 0, width, height, null);
+	    g2d.dispose();
+	    return bi;
+	}
+	
+	public ImageIcon getImage(String result)
+	//PRE:	result is one of the five possible inspection results: "Pass", "Fail",
+	//		"Pass w/ Conditions", "Out of Business", "No Entry"
+	//POST:	FCTVAL == the correct ImageIcon, or image, representing the result
+	//		of the inspection
+	{
+		//Initialize the BufferedImage
+		img=null;
+		
+		try
+		{
+			//Read in a file with the given file name
+			img=ImageIO.read(new File("../"+result+".jpg"));
+		}
+		catch (IOException e1)
+		{
+			//Error reporting
+			System.out.println("File was not found, or an error occured.");
+			e1.printStackTrace();
+		}
+		
+		//Resize the image to fit the screen size
+		BufferedImage resizedImg=resize(img,appWidth/4,appHeight/8);
+		
+		//New ImageIcon for the return image
+		ImageIcon returnImage=new ImageIcon(resizedImg);
+		return returnImage;		
+	}
+	
+	
+	public int x(double scaleFactor){
 		return (int)(scaleFactor*getWidth());
 	}
 	
@@ -321,60 +437,32 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 		return (int)(scaleFactor*getHeight());
 	}
 	
-	public static BufferedImage resize(BufferedImage image, int width, int height) {
-	    BufferedImage bi = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);
-	    Graphics2D g2d = (Graphics2D) bi.createGraphics();
-	    g2d.addRenderingHints(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
-	    g2d.drawImage(image, 0, 0, width, height, null);
-	    g2d.dispose();
-	    return bi;
-	}
-	
-	public ImageIcon getImage(String result)
-	{
-		BufferedImage img=null;
-			try
-			{
-				img=ImageIO.read(new File("../"+result+".jpg"));
-			}
-			catch (IOException e1)
-			{
-				e1.printStackTrace();
-			}
-			BufferedImage resizedImg=resize(img,150,60);
-			ImageIcon returnImage=new ImageIcon(resizedImg);
-			return returnImage;		
-	}
-	
+	//The following are unused methods of the implemented interfaces
+	public void itemStateChanged(ItemEvent e)
+ 	{
+ 	}
 	public void valueChanged(ListSelectionEvent l)
 	{
-		
 	}
-	
-	
-	
-	
-	
-	
+ 	
+ 	public void mouseClicked(MouseEvent e) 
+ 	{
+ 	}
 	
 	public void mousePressed(MouseEvent e) 
     {
-
  	}
 
     public void mouseReleased(MouseEvent e) 
  	{
-
  	}
 
     public void mouseEntered(MouseEvent e) 
     {
-
  	}
 
  	public void mouseExited(MouseEvent e)
  	{
-
  	}
 }//end class GUI
 
