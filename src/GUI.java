@@ -24,7 +24,8 @@ import java.util.Arrays;
  * 
  */
 
-public class GUI extends Applet implements ActionListener, ItemListener, MouseListener, FocusListener, ListSelectionListener
+public class GUI extends Applet implements ActionListener, ItemListener, 
+							MouseListener, FocusListener, ListSelectionListener
 {
  	private JButton searchButton;			//Button for executing the search
  	private JTextField nameField;		    //Holds the name of the facility
@@ -363,7 +364,6 @@ public class GUI extends Applet implements ActionListener, ItemListener, MouseLi
 			//Display the image in the JLabel
 	 		results.setIcon(image);
  		}
- 		
  		repaint();
  	}
  
