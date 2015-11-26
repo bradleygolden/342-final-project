@@ -106,8 +106,8 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	     addressField.setForeground(Color.GRAY);
 	     
 	     //Create the descriptive labels
-	     searchBy=new JLabel("                         Search By:");
-	     andOr=new JLabel("                          And/Or");
+	     searchBy=new JLabel("                           Search By:");
+	     andOr=new JLabel("                             And/Or");
 	     name=new JLabel("Name of facility: ");
 	     address=new JLabel("Address: ");
 	     date=new JLabel("Date of inspection: ");
