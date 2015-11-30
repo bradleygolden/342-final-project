@@ -75,30 +75,30 @@ public class BusinessTierObjects {
 	
 	
 	
-	public class RestaurantDetail extends Restaurant
-	{
-		//Data Dictionary
-		private String date;
-		private ArrayList<String> violations;
-		
-		public RestaurantDetail(String address, String result, String date, ArrayList<String> violations, String inspection_date)
-		{
-			super(address, result, inspection_date);
-			this.date = date;
-			this.violations = violations;
-		}
-		
-		public String getDate()
-		{
-			return date;
-		}
-		
-		public ArrayList<String> getViolations()
-		{
-			return violations;
-		}
-		
-	}//end of class
+//	public class RestaurantDetail extends Restaurant
+//	{
+//		//Data Dictionary
+//		private String date;
+//		private ArrayList<String> violations;
+//		
+//		public RestaurantDetail(String address, String result, String date, ArrayList<String> violations, String inspection_date)
+//		{
+//			super(address, result, inspection_date);
+//			this.date = date;
+//			this.violations = violations;
+//		}
+//		
+//		public String getDate()
+//		{
+//			return date;
+//		}
+//		
+//		public ArrayList<String> getViolations()
+//		{
+//			return violations;
+//		}
+//		
+//	}//end of class
 	
 
 }

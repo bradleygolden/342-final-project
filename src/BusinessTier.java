@@ -21,7 +21,6 @@ public class BusinessTier {
 	private String address;
 	private String resultString;
 	private String inspectionString;
-	// private SodaTier aSodaTier;
 	private DataTier dt;
 	private ResultSet result;
 	private BusinessTierObjects business;
@@ -40,18 +39,24 @@ public class BusinessTier {
 
 	}
 	
-	public BusinessTierObjects.RestaurantBasicInfo getRestaurantAddress(String address)
+	public ArrayList<BusinessTierObjects.RestaurantBasicInfo> getRestaurantAddress(String address)
 	//PRE:
 	//POST: Returns 
 	{
 		//Data Dictionary
 		BusinessTierObjects.RestaurantBasicInfo aRestaurant;
-		//ArrayList<BusinessTierObjects.RestaurantBasicInfo> rList;
+		ArrayList<BusinessTierObjects.RestaurantBasicInfo> rList;
+		String name;
 		
-		sql = String.format("SELECT TOP 1 Results, Inspection_Date"
-							+"FROM FoodInspections"
-							+"WHERE Address = \'%s\'" 
-							+"ORDER BY Inspection_Date desc", address);
+		sql = String.format("SELECT Results, Inspection_Date,"
+							+ "AKA_Name FROM FoodInspections "
+							+ "WHERE Address = \'%s\'"
+							+ "ORDER BY AKA_Name asc, Inspection_Date desc", address);
+		
+//		sql = String.format("SELECT TOP 1 Results, Inspection_Date"
+//							+"FROM FoodInspections"
+//							+"WHERE Address = \'%s\'" 
+//							+"ORDER BY Inspection_Date desc", address);
 		
 		
 		if(result == null)
@@ -60,37 +65,39 @@ public class BusinessTier {
 		}
 		else
 		{	
-			//rList = new ArrayList<BusinessTierObjects.RestaurantBasicInfo>();
+			rList = new ArrayList<BusinessTierObjects.RestaurantBasicInfo>();
 			
 			try
 			{
 				business = new BusinessTierObjects();
 				prev = " ";
+				name = " ";
 				
 				while(result.next())
 				{
+					 name = result.getString("AKA-Name");
 					 resultString = result.getString("Results");
 					 inspectionString = result.getString("Inspection_Date");
 					 
-					 if(!prev.equals(address))					//Only add the latest inspection
+					 if(!prev.equals(name))					//Only add the latest inspection
 					 {
 						 aRestaurant = business.new RestaurantBasicInfo(resultString, inspectionString);
-							dt.closeDB();
-							return aRestaurant;
+						 rList.add(aRestaurant);
 					 }
 	
-					 prev = address;
+					 prev = name;
 	 		
 				}
 				
 			}
-			
-			catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+			catch (SQLException e) 
+			{
+				e.printStackTrace();
+				return null;
 			}
 			
-			return null;
+			dt.closeDB();
+			return rList;
 		}
 			
 	}
@@ -153,39 +160,8 @@ public class BusinessTier {
 		return rList;
 
 	}// end of method
-
-	// public ArrayList<BusinessTierObjects.RestaurantDetail> getDetail(String
-	// name, String address)
-	// {
-	// //Connect to the database
-	// aSodaTier = new
-	// SodaTier("https://data.cityofchicago.org/resource/cwig-ma7x.json?");
-	//
-	// //Find a way to combine the rows using SQL
-	// sql = String.format("$select=aka_name,results,$q &$where=aka_name='%s',q
-	// = '%s",name, address );
-	//
-	// try
-	// {
-	// json = aSodaTier.executeQuery(sql);
-	//
-	//
-	//
-	// }
-	// catch (NullPointerException ex)
-	// {
-	// System.out.println(ex.toString());
-	// return null;
-	// }
-	//// catch (JSONException ex)
-	//// {
-	//// System.out.println(ex.toString());
-	//// return null;
-	//// }
-	//
-	//
-	// return null;
-	// }
+	
+	
 	
 	public static void main(String[] args) 
 	{
