@@ -39,7 +39,8 @@ public class BusinessTier {
 
 	}
 	
-	public ArrayList<BusinessTierObjects.RestaurantBasicInfo> getRestaurantAddress(String address)
+	
+	public ArrayList<BusinessTierObjects.RestaurantBasicInfo> getRestaurantWithAddressField(String address)
 	//PRE:
 	//POST: Returns 
 	{
@@ -53,52 +54,42 @@ public class BusinessTier {
 							+ "WHERE Address = \'%s\'"
 							+ "ORDER BY AKA_Name asc, Inspection_Date desc", address);
 		
-//		sql = String.format("SELECT TOP 1 Results, Inspection_Date"
-//							+"FROM FoodInspections"
-//							+"WHERE Address = \'%s\'" 
-//							+"ORDER BY Inspection_Date desc", address);
+
+		result = dt.executeQuery(sql);
 		
-		
-		if(result == null)
+		rList = new ArrayList<BusinessTierObjects.RestaurantBasicInfo>();
+			
+		try
 		{
+			business = new BusinessTierObjects();
+			prev = " ";
+			name = " ";
+			
+			while(result.next())
+			{
+				 name = result.getString("AKA_Name");
+				 resultString = result.getString("Results");
+				 inspectionString = result.getString("Inspection_Date");
+				 
+				 if(!prev.equals(name))					//Only add the latest inspection
+				 {
+					 aRestaurant = business.new RestaurantBasicInfo(resultString, inspectionString);
+					 rList.add(aRestaurant);
+				 }
+
+				 prev = name;
+ 		
+			}
+			
+		}
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
 			return null;
 		}
-		else
-		{	
-			rList = new ArrayList<BusinessTierObjects.RestaurantBasicInfo>();
-			
-			try
-			{
-				business = new BusinessTierObjects();
-				prev = " ";
-				name = " ";
-				
-				while(result.next())
-				{
-					 name = result.getString("AKA-Name");
-					 resultString = result.getString("Results");
-					 inspectionString = result.getString("Inspection_Date");
-					 
-					 if(!prev.equals(name))					//Only add the latest inspection
-					 {
-						 aRestaurant = business.new RestaurantBasicInfo(resultString, inspectionString);
-						 rList.add(aRestaurant);
-					 }
-	
-					 prev = name;
-	 		
-				}
-				
-			}
-			catch (SQLException e) 
-			{
-				e.printStackTrace();
-				return null;
-			}
-			
-			dt.closeDB();
-			return rList;
-		}
+		
+		dt.closeDB();
+		return rList;
 			
 	}
 
@@ -161,6 +152,38 @@ public class BusinessTier {
 
 	}// end of method
 	
+	public BusinessTierObjects.RestaurantBasicInfo getRestaurant(String name, String address)
+	{
+		
+		sql = String.format("SELECT TOP 1 Results, Inspection_Date"
+							+" FROM FoodInspections"
+							+" WHERE Address = \'%s\' AND AKA_Name = \'%s\'" 
+							+" ORDER BY Inspection_Date desc", address, name);
+		
+		result = dt.executeQuery(sql);
+		
+		try
+		{
+			while(result.next())
+			{
+				resultString = result.getString("Results");
+				inspectionString = result.getString("Inspection_Date");
+				
+				BusinessTierObjects.RestaurantBasicInfo aRestaurant = business.new RestaurantBasicInfo(resultString, inspectionString);
+				dt.closeDB();
+				return aRestaurant;
+			}
+			
+		}
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+		
+		return null;
+		
+	}
 	
 	
 	public static void main(String[] args) 
@@ -168,6 +191,10 @@ public class BusinessTier {
 		BusinessTier business = new BusinessTier();
 		
 		business.getRestaurant("Subway");
+		
+		business.getRestaurantWithAddressField("1 E JACKSON BLVD");
+		
+		business.getRestaurant("Chartwells @ DePaul University","1 E JACKSON BLVD");
 		
 //		DataTier dt = new DataTier("dbText.txt");
 //		
