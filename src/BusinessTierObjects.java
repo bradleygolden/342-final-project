@@ -14,31 +14,23 @@ public class BusinessTierObjects {
 	}
 	
 	
-	public class Restaurant
+	public class RestaurantBasicInfo
 	{
-		//Data Dictionary
-		private String address;
 		private String result;
 		private String inspection_date;
 		
-		public Restaurant()
+		public RestaurantBasicInfo()
 		//POST: Default Restaurant object is created
 		{
 			
 		}
 		
-		public Restaurant(String address, String result, String inspection_date)
-		//POST: 
+		public RestaurantBasicInfo(String result, String inspection_date)
+		//PRE:
+		//POST
 		{
-			this.address = address;
 			this.result = result;
 			this.inspection_date = inspection_date;
-		}
-		
-		public String getAddress()
-		//POST:
-		{
-			return address;
 		}
 		
 		public String getResult()
@@ -51,8 +43,37 @@ public class BusinessTierObjects {
 		{
 			return inspection_date;
 		}
+	}
+	
+	public class Restaurant extends RestaurantBasicInfo
+	{
+		//Data Dictionary
+		private String address;
+		
+		public Restaurant()
+		//POST: Default Restaurant object is created
+		{
+			
+		}
+		
+		public Restaurant(String address, String result, String inspection_date)
+		//POST: 
+		{
+			super(result, inspection_date);
+			this.address = address;
+		}
+		
+		public String getAddress()
+		//POST:
+		{
+			return address;
+		}
+		
 		
 	}//end of Restaurant
+	
+	
+	
 	
 	public class RestaurantDetail extends Restaurant
 	{

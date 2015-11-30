@@ -21,9 +21,11 @@ public class BusinessTier {
 	private String address;
 	private String resultString;
 	private String inspectionString;
-	private ArrayList<BusinessTierObjects.Restaurant> rList;
 	// private SodaTier aSodaTier;
 	private DataTier dt;
+	private ResultSet result;
+	private BusinessTierObjects business;
+	private String prev;
 
 	public BusinessTier()
 	// POST: Instantiates a BusinessTier object with private class member sql
@@ -37,26 +39,73 @@ public class BusinessTier {
 		dt = new DataTier("dbText.txt");
 
 	}
+	
+	public BusinessTierObjects.RestaurantBasicInfo getRestaurantAddress(String address)
+	//PRE:
+	//POST: Returns 
+	{
+		//Data Dictionary
+		BusinessTierObjects.RestaurantBasicInfo aRestaurant;
+		//ArrayList<BusinessTierObjects.RestaurantBasicInfo> rList;
+		
+		sql = String.format("SELECT TOP 1 Results, Inspection_Date"
+							+"FROM FoodInspections"
+							+"WHERE Address = \'%s\'" 
+							+"ORDER BY Inspection_Date desc", address);
+		
+		
+		if(result == null)
+		{
+			return null;
+		}
+		else
+		{	
+			//rList = new ArrayList<BusinessTierObjects.RestaurantBasicInfo>();
+			
+			try
+			{
+				business = new BusinessTierObjects();
+				prev = " ";
+				
+				while(result.next())
+				{
+					 resultString = result.getString("Results");
+					 inspectionString = result.getString("Inspection_Date");
+					 
+					 if(!prev.equals(address))					//Only add the latest inspection
+					 {
+						 aRestaurant = business.new RestaurantBasicInfo(resultString, inspectionString);
+							dt.closeDB();
+							return aRestaurant;
+					 }
+	
+					 prev = address;
+	 		
+				}
+				
+			}
+			
+			catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+			}
+			
+			return null;
+		}
+			
+	}
 
 	public ArrayList<BusinessTierObjects.Restaurant> getRestaurant(String businessName)
+	// PRE: 
 	// POST: FCTVAL == ArrayList<BusinessTierObjects.Restaurant> object if query
 	// was successful, null
 	// otherwise
 	{
 		// Data Dictionary
-		//int jsonSize;
-		BusinessTierObjects business;
 		BusinessTierObjects.Restaurant aRestaurant;
-		String prev, current;
+		ArrayList<BusinessTierObjects.Restaurant> rList;
 
-		// Connect to the database
-		// aSodaTier = new
-		// SodaTier("https://data.cityofchicago.org/resource/cwig-ma7x.json?");
-		
 		// Build the sql string
-		//sql = String.format("$select=aka_name,results,address &$where=aka_name='%s'", businessName);
-		// str = str.replaceAll("'", "''");
-		sql = String.format("SELECT Address FROM FoodInspections WHERE AKA_Name = '%s' GROUP BY Address", businessName);
 		sql = String.format("SELECT FoodInspections.Address, FoodInspections.Results, FoodInspections.Inspection_Date" 
 							+ " FROM FoodInspections"
 							+ " INNER JOIN"
@@ -68,16 +117,8 @@ public class BusinessTier {
 							+" WHERE FoodInspections.Inspection_Date = T.Inspection_Date"
 							+" ORDER BY Address asc", businessName);
 		
-		ResultSet result = dt.executeQuery(sql);
+		result = dt.executeQuery(sql);
 				
-
-//		try {
-//			while (result.next()) {
-//				System.out.println(result.getString("AKA_Name") + " " + result.getString("Address"));
-//			}
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
 		rList = new ArrayList<BusinessTierObjects.Restaurant>();
 		
 		try
@@ -110,54 +151,6 @@ public class BusinessTier {
 		dt.closeDB();
 		
 		return rList;
-
-		// sql = String.format("$select=aka_name,results,violations
-		// &$where=aka_name='MAKOTO'");
-		// System.out.println(sql);
-		//
-		// try
-		// {
-		// json = aSodaTier.executeQuery(sql);
-		//
-		// if(json.length() == 0) //If the query was unsuccessful and it didn't
-		// get anything
-		// {
-		// return null;
-		// }
-		//
-		// rList = new ArrayList<BusinessTierObjects.Restaurant>();
-		//
-		//
-		// jsonSize = json.length();
-		//
-		// //Now, create the objects that are being returned based on the data
-		// that was pulled
-		// business = new BusinessTierObjects();
-		//
-		// //Create the list based on what was returned by the query
-		// for(int i = 0; i < jsonSize; i++)
-		// {
-		// businessName = json.getJSONObject(i).get("aka_name").toString();
-		// address = json.getJSONObject(i).get("address").toString();
-		// result = json.getJSONObject(i).get("results").toString();
-		//
-		// aRestaurant = business.new Restaurant(businessName, address, result);
-		// rList.add(aRestaurant);
-		// }
-		//
-		// return rList;
-		//
-		// }
-		// catch (NullPointerException ex)
-		// {
-		// System.out.println(ex.toString());
-		// return null;
-		// }
-		// catch (JSONException ex)
-		// {
-		// System.out.println(ex.toString());
-		// return null;
-		// }
 
 	}// end of method
 
