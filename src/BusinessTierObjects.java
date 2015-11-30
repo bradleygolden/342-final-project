@@ -17,9 +17,9 @@ public class BusinessTierObjects {
 	public class Restaurant
 	{
 		//Data Dictionary
-		private String name;
 		private String address;
 		private String result;
+		private String inspection_date;
 		
 		public Restaurant()
 		//POST: Default Restaurant object is created
@@ -27,18 +27,12 @@ public class BusinessTierObjects {
 			
 		}
 		
-		public Restaurant(String name, String address, String result )
+		public Restaurant(String address, String result, String inspection_date)
 		//POST: 
 		{
-			this.name = name;
 			this.address = address;
-			this.result = result;	
-		}
-		
-		public String getName()
-		//POST: 
-		{
-			return name;
+			this.result = result;
+			this.inspection_date = inspection_date;
 		}
 		
 		public String getAddress()
@@ -53,6 +47,11 @@ public class BusinessTierObjects {
 			return result;
 		}
 		
+		public String getInspectionDate()
+		{
+			return inspection_date;
+		}
+		
 	}//end of Restaurant
 	
 	public class RestaurantDetail extends Restaurant
@@ -61,9 +60,9 @@ public class BusinessTierObjects {
 		private String date;
 		private ArrayList<String> violations;
 		
-		public RestaurantDetail(String name, String address, String result, String date, ArrayList<String> violations)
+		public RestaurantDetail(String address, String result, String date, ArrayList<String> violations, String inspection_date)
 		{
-			super(name, address, result);
+			super(address, result, inspection_date);
 			this.date = date;
 			this.violations = violations;
 		}

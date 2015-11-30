@@ -19,7 +19,8 @@ public class BusinessTier {
 	JSONArray json; // Object that stores the executeScalar result
 	private String businessName;
 	private String address;
-	private String result;
+	private String resultString;
+	private String inspectionString;
 	private ArrayList<BusinessTierObjects.Restaurant> rList;
 	// private SodaTier aSodaTier;
 	private DataTier dt;
@@ -31,7 +32,7 @@ public class BusinessTier {
 		sql = "";
 		businessName = "";
 		address = "";
-		result = "";
+		resultString = "";
 		
 		dt = new DataTier("dbText.txt");
 
@@ -46,6 +47,7 @@ public class BusinessTier {
 		//int jsonSize;
 		BusinessTierObjects business;
 		BusinessTierObjects.Restaurant aRestaurant;
+		String prev, current;
 
 		// Connect to the database
 		// aSodaTier = new
@@ -53,21 +55,60 @@ public class BusinessTier {
 		
 		// Build the sql string
 		//sql = String.format("$select=aka_name,results,address &$where=aka_name='%s'", businessName);
-		sql = String.format("SELECT AKA_Name, Results, Address FROM FoodInspections WHERE AKA_Name = '%s'", businessName);
+		// str = str.replaceAll("'", "''");
+		sql = String.format("SELECT Address FROM FoodInspections WHERE AKA_Name = '%s' GROUP BY Address", businessName);
+		sql = String.format("SELECT FoodInspections.Address, FoodInspections.Results, FoodInspections.Inspection_Date" 
+							+ " FROM FoodInspections"
+							+ " INNER JOIN"
+							+" (SELECT Address, max(Inspection_Date) AS Inspection_Date"
+							+" FROM FoodInspections" 
+							+" WHERE AKA_NAME = \'%s\'" 
+							+" GROUP BY Address) T"
+							+" ON T.Address = FoodInspections.Address"
+							+" WHERE FoodInspections.Inspection_Date = T.Inspection_Date"
+							+" ORDER BY Address asc", businessName);
+		
 		ResultSet result = dt.executeQuery(sql);
+				
 
-		try {
-			while (result.next()) {
-				System.out.println(result.getString("AKA_Name") + " " + result.getString("Address"));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		dt.closeDB();
-
+//		try {
+//			while (result.next()) {
+//				System.out.println(result.getString("AKA_Name") + " " + result.getString("Address"));
+//			}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
 		rList = new ArrayList<BusinessTierObjects.Restaurant>();
+		
+		try
+		{
+			business = new BusinessTierObjects();
+			prev = " ";
+			
+			while(result.next())
+			{
+				 address = result.getString("Address");
+				 resultString = result.getString("Results");
+				 inspectionString = result.getString("Inspection_Date");
+				 
+				 if(!prev.equals(address))					//Only add the latest inspection
+				 {
+					 aRestaurant = business.new Restaurant(address, resultString, inspectionString);
+					 rList.add(aRestaurant);
+				 }
 
+				 prev = address;
+ 		
+			}
+		}
+		
+		catch (SQLException e) {
+		e.printStackTrace();
+		return null;
+	}
+		
+		dt.closeDB();
+		
 		return rList;
 
 		// sql = String.format("$select=aka_name,results,violations
