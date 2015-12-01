@@ -113,7 +113,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	     date=new JLabel("Date of inspection: ");
 	     
 	     //Initialize the picture to be used in the results JLabel
-	     image = new ImageIcon("../pass.jpg");
+	     image = new ImageIcon("../noData.jpg");
 	     results=new JLabel("",null, JLabel.CENTER);
 	     
 	     //Initialize the picture to be used in the title JLabel
@@ -227,14 +227,19 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  			//Create container to hold the results
  			ArrayList<BusinessTierObjects.Restaurant> result;
  			
+ 			//Create container to hold info
+ 			ArrayList<BusinessTierObjects.RestaurantBasicInfo> info;
+ 			
  			//Get the name of the facility specified by the user
  			String userSpecifiedName=nameField.getText();
- 			
  			//Get the address of the facility specified by the user
  			String userSpecifiedAddress=addressField.getText();
  			
  			//Initialize result container to null
  			result=null;
+ 			
+ 			//Initialize info container to null
+ 			info=null;
  			 			
  			//Check if both text fields are empty
  			if(userSpecifiedName.equals("Enter Restaurant Name") && 
@@ -262,7 +267,8 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  	 			result=bt.getRestaurant(userSpecifiedName);
  	 			
  	 			//Check if the result was empty
- 	 			if(result==null)
+ 	 			if((result==null||result.size()==0)&&
+ 	 					userSpecifiedAddress.equals("Enter Restaurant Street Address"))
  	 			{
  	 				//Result was empty, so show error message
  	 				JOptionPane.showMessageDialog(
@@ -277,20 +283,21 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  	 			}
  	 			
  	 			//Try to re-query with the address if the address field is not blank
- 	 			if(!(userSpecifiedAddress.equals("Enter Restaurant Street Address")))
+ 	 			if((result==null||result.size()==0)&&
+ 	 					!(userSpecifiedAddress.equals("Enter Restaurant Street Address")))
  	 			{
  	 				JOptionPane.showMessageDialog(
  	 	                    null,
- 	 	                    "Attempting to re-query with the given address...",
+ 	 	                  "No restaurant named "+ 
+                    		userSpecifiedName+" was found in the database."+
+                    			  " Attempting to re-query with the given address...",
  	 	                    "Attention!",
  	 	                    JOptionPane.INFORMATION_MESSAGE,null);
  	 				
- 	 				//Query the database based on the address of the facility
- 	 	 			//TODO: Waiting for the address-query method to be completed
+ 	 				//Query the database based on the address of the facility 	 				
+ 	 	 			info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
  	 			}
- 				
- 	 			//Set the name of the name label
- 	 			name.setText("Name of facility: "+userSpecifiedName);
+ 	 			
  			}
  			//Query the database using the address since there was no name specified
  			else
@@ -299,10 +306,25 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  	 			name.setText("Name of facility: ");
  	 			
  	 			address.setText("Address: "+userSpecifiedAddress);
+ 	 			
 	 			//Query the database based on the address of the facility
-	 	 		//TODO: Waiting for the address-query method to be completed
+	 	 		info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
+	 	 		
+	 	 		if(result==null)
+	 	 		{
+	 	 			JOptionPane.showMessageDialog(
+ 	 	                    null,
+ 	 	                  "No restaurant with the address "+ 
+                    		userSpecifiedAddress+" was found in the database."
+                    		+ " Try entering a facility name and searching again.",
+ 	 	                    "Attention!",
+ 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+	 	 			repaint();
+	 	 			return;
+	 	 		}
 
  			}
+ 			
  			
  			//Check if the query returned more than one facility
  			if(result.size()>1)
@@ -346,21 +368,37 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  				//Get the index of the selected address
  				int selectedIndex=list.getSelectedIndex();
  				
- 				
  				//Set the text of the address label
  				address.setText("Address: "+addressStringArray[selectedIndex]);
- 				
+ 				userSpecifiedAddress=addressStringArray[selectedIndex];
  				
  				//Query the database based on the address of the facility
-	 	 		//TODO: Waiting for the address-query method to be completed
+	 	 		info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
  			
  			}
  			
- 			System.out.println("Result is "+result.get(0).getResult());
- 			
+ 			if(info==null||info.size()==0){
+ 				JOptionPane.showMessageDialog(
+	 	                    null,
+	 	                  "No restaurant with the name "+ 
+                		userSpecifiedName+" or the address "+userSpecifiedAddress
+                				+ " was found in the database.",
+	 	                    "Attention!",
+	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+ 	 			repaint();
+ 	 			return;
+ 			}
+ 			//Set the name of the name label
+	 		name.setText("Name of facility: "+userSpecifiedName);
+	 		
  			//Get the corresponding image to the result of the query
- 			image=getImage(result.get(0).getResult());
-				
+ 			image=getImage(info.get(0).getResult());
+ 			
+ 			System.out.println(info.get(0).getResult());
+			
+ 			//Set the date of the date label
+ 			date.setText("Date of inspection: "+info.get(0).getInspectionDate());
+ 			
 			//Display the image in the JLabel
 	 		results.setIcon(image);
  		}
@@ -426,7 +464,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 
 	
 	public static BufferedImage resize(BufferedImage image, int width, int height)
-	//PRE:	image is initalized, width and height > 0
+	//PRE:	image is initialized, width and height > 0
 	//POST:	FCTVAL == a BufferedImage that is resized to size width x height
 	{
 		//Create a new BufferedImage from scratch
