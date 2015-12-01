@@ -233,7 +233,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  			//Get the name of the facility specified by the user
  			String userSpecifiedName=nameField.getText();
  			//Get the address of the facility specified by the user
- 			String userSpecifiedAddress=addressField.getText();
+ 			String userSpecifiedAddress=addressField.getText().toUpperCase();
  			
  			//Initialize result container to null
  			result=null;
@@ -304,8 +304,6 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  			{
  				//Set the name of the name label
  	 			name.setText("Name of facility: ");
- 	 			
- 	 			address.setText("Address: "+userSpecifiedAddress);
  	 			
 	 			//Query the database based on the address of the facility
 	 	 		info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
@@ -388,8 +386,10 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  	 			repaint();
  	 			return;
  			}
- 			//Set the name of the name label
+ 			//Set the name and address of the appropriate labels
 	 		name.setText("Name of facility: "+userSpecifiedName);
+	 		address.setText("Address: "+userSpecifiedAddress);
+
 	 		
  			//Get the corresponding image to the result of the query
  			image=getImage(info.get(0).getResult());
