@@ -15,8 +15,8 @@ import java.util.ArrayList;
 public class BusinessTier {
 
 	// Data dictionary
-	private String sql; // SQL query string
-	JSONArray json; // Object that stores the executeScalar result
+	private String sql; 						// SQL query string
+	JSONArray json; 							// Object that stores the executeScalar result
 	private String businessName;
 	private String address;
 	private String resultString;
@@ -48,6 +48,7 @@ public class BusinessTier {
 		//Data Dictionary
 		String violations;
 		Boolean hasOne;
+		String[] organizedViolations;
 		
 		sql = String.format("SELECT Violations "
 							+ " FROM FoodInspections "
@@ -81,6 +82,7 @@ public class BusinessTier {
 			}
 			else
 			{
+				//organizedViolations = violations.split("[]");
 				return violations;
 			}
 					
@@ -126,8 +128,7 @@ public class BusinessTier {
 				aRestaurantName = result.getString("AKA_Name");
 				restaurantNameObject = business.new RestaurantName(aRestaurantName);
 				rlist.add(restaurantNameObject);
-			}
-			
+			}	
 			
 		}
 		catch(SQLException e)
@@ -299,37 +300,43 @@ public class BusinessTier {
 		
 		ArrayList<BusinessTierObjects.RestaurantName> names = new ArrayList<BusinessTierObjects.RestaurantName>();
 		
-		names = business.getSuggestedNames("BurGER");
-			
+//		names = business.getSuggestedNames("BurGER");
+//			
+//		for(BusinessTierObjects.RestaurantName name : names)
+//		{
+//			System.out.println(name.getName());
+//		}
+//		
+//		names = business.getSuggestedNames("McDonald's");
+//		
+//		for(BusinessTierObjects.RestaurantName name : names)
+//		{
+//			System.out.println(name.getName());
+//		}
+		
+		names = business.getSuggestedNames("Subway");
+		
 		for(BusinessTierObjects.RestaurantName name : names)
 		{
 			System.out.println(name.getName());
 		}
 		
-		names = business.getSuggestedNames("McDonald's");
-		
-		for(BusinessTierObjects.RestaurantName name : names)
-		{
-			System.out.println(name.getName());
-		}
-		
-		
-		System.out.println("\n\nReturning bad values");
-		String string;
-		
-		string = business.getViolations("Mcdonalds", "1443 E 87TH ST", "2015-10-01 00:00:00.0");
-		
-		if(string == null)
-		{
-			System.out.println("There are no violations listed in the database for that restaurant");
-		}
-		else
-		{
-			System.out.print(string);
-		}
-		
-		System.out.println("Returning good values");
-		System.out.println(business.getViolations("McDonalds", "9211 S COMMERCIAL AVE", "2015-10-16 00:00:00.0"));
+//		System.out.println("\n\nReturning bad values");
+//		String string;
+//		
+//		string = business.getViolations("Mcdonalds", "1443 E 87TH ST", "2015-10-01 00:00:00.0");
+//		
+//		if(string == null)
+//		{
+//			System.out.println("There are no violations listed in the database for that restaurant");
+//		}
+//		else
+//		{
+//			System.out.print(string);
+//		}
+//		
+//		System.out.println("Returning good values");
+//		System.out.println(business.getViolations("McDonalds", "9211 S COMMERCIAL AVE", "2015-10-16 00:00:00.0"));
 	
 		//business.getViolations("Mcdonalds", "1443 E 87TH ST", "2015-10-01 00:00:00.0");
 		
