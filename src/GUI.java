@@ -149,7 +149,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	     		+ "Enter its name and/or street address:",titleImage,JLabel.CENTER);
 	     titleImageLabel.setHorizontalTextPosition(JLabel.CENTER);
 	     titleImageLabel.setVerticalTextPosition(JLabel.BOTTOM);
-	     titleImageLabel.setFont(new Font("Serif", Font.BOLD, 15));
+	     titleImageLabel.setFont(new Font(Font.SERIF, Font.BOLD, 15));
 	     
 	     
 	     //Add the text fields and search button to 
@@ -267,10 +267,12 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  		resizedImg=resize(titleImg,(int)(appWidth/1.5),appHeight/10);
  		titleImage=new ImageIcon(resizedImg);
  		titleImageLabel.setIcon(titleImage);
- 		titleImageLabel.setFont(new Font("Serif", Font.BOLD, (appWidth/35+appHeight/35)/2));
+ 		//titleImageLabel.setFont(new Font("Serif", Font.BOLD, (appWidth/35+appHeight/35)/2));
+ 		titleImageLabel.setFont(new Font(Font.SERIF, Font.BOLD+Font.ITALIC, (appWidth/35+appHeight/35)/2));
+
  		
  		//Make the font scaled
- 		Font f=new Font("Serif", Font.BOLD, (appWidth/38+appHeight/38)/2);
+ 		Font f=new Font(Font.SERIF, Font.BOLD, (appWidth/38+appHeight/38)/2);
  		searchBy.setFont(f);
  		nameField.setFont(f);
  		andOr.setFont(f);
