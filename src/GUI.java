@@ -28,6 +28,8 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 							MouseListener, FocusListener, ListSelectionListener
 {
  	private JButton searchButton;			//Button for executing the search
+ 	private JButton clearButton;			//Button for clearing fields
+ 	private JButton viewDetails;				//Button for viewing details
  	private JTextField nameField;		    //Holds the name of the facility
  	private JTextField addressField;		//Holds the street address of the facility
  	private JLabel searchBy;				//Label for "Search By"
@@ -60,6 +62,8 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 		 GridLayout rightSideLayout;
 		 GridLayout mainPanelLayout;
 		 BorderLayout canvasPanelLayout;
+		 GridBagLayout gBLayout=new GridBagLayout();
+		 GridBagConstraints gbc=new GridBagConstraints();
 		
 		 //Set the initial size to 600x500
 		 setSize(600,500);
@@ -76,29 +80,36 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	     canvasPanel=new JPanel();
 	     
 	     //Set up the left half
-	     leftSideLayout=new GridLayout(7,1);
+	     leftSideLayout=new GridLayout(9,1);
 	     leftSideLayout.setVgap(getHeight()/10);
 	     leftSide.setLayout(leftSideLayout);
 	     
 	     //Set up the right half
-	     rightSideLayout=new GridLayout(5,1);
+	     rightSideLayout=new GridLayout(6,1);
 	     rightSideLayout.setVgap(getHeight()/12);
 	     rightSide.setLayout(rightSideLayout);
 	     
+	    	     
 	     //Set up the main panel that covers the canvas
+	     mainPanel.setLayout(gBLayout);
+	     
+	     /*
 	     mainPanelLayout=new GridLayout(1,2);
 	     mainPanelLayout.setHgap(getWidth()/10);
 	     mainPanel.setLayout(mainPanelLayout);
+	     */
 	     
 	     //Set up the canvas panel
 	     canvasPanelLayout=new BorderLayout();
-	     canvasPanelLayout.setVgap(getHeight()/25);
+	     canvasPanelLayout.setVgap(5);
 	     canvasPanelLayout.setHgap(0);
 	     canvasPanel.setLayout(canvasPanelLayout);
 	     
 	     //Create the search button and search text fields
 	     searchButton=new JButton("Search!");
-	     nameField=new JTextField("Enter Restaurant Name",10);
+	     clearButton=new JButton("Clear All Fields");
+	     viewDetails=new JButton("View Inspection Details");
+	     nameField=new JTextField("Enter Restaurant Name",20);
 	     addressField=new JTextField("Enter Restaurant Street Address",20);
 	     
 	     //Set text in text fields as gray
@@ -106,8 +117,10 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	     addressField.setForeground(Color.GRAY);
 	     
 	     //Create the descriptive labels
-	     searchBy=new JLabel("                           Search By:");
-	     andOr=new JLabel("                             And/Or");
+	     //searchBy=new JLabel("                           Search By:");
+	     //andOr=new JLabel("                             And/Or");
+	     searchBy=new JLabel("Search By:");
+	     andOr=new JLabel("And/Or");
 	     name=new JLabel("Name of facility: ");
 	     address=new JLabel("Address: ");
 	     date=new JLabel("Date of inspection: ");
@@ -132,8 +145,8 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	     
 	     //Set the title image JLabel and text in the proper place.
 	     titleImage=new ImageIcon(resizedImg);
-	     titleImageLabel=new JLabel("Search for your favorite restaurant in Chicago by "
-	     		+ "entering its name and/or street address:",titleImage,JLabel.CENTER);
+	     titleImageLabel=new JLabel("Search for your favorite restaurant in Chicago! "
+	     		+ "Enter its name and/or street address:",titleImage,JLabel.CENTER);
 	     titleImageLabel.setHorizontalTextPosition(JLabel.CENTER);
 	     titleImageLabel.setVerticalTextPosition(JLabel.BOTTOM);
 	     titleImageLabel.setFont(new Font("Serif", Font.BOLD, 15));
@@ -143,7 +156,8 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	     //their appropriate event listeners
 	     nameField.addFocusListener(this);
 	     addressField.addFocusListener(this);
-	     searchButton.addActionListener(this);     
+	     searchButton.addActionListener(this);
+	     clearButton.addActionListener(this);
 	
 	     //Set the background to the custom color
 	     mainPanel.setBackground(backgroundColor);
@@ -151,22 +165,75 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	     rightSide.setBackground(backgroundColor);
 	     canvasPanel.setBackground(backgroundColor);
 	     setBackground(backgroundColor);
-			 
+		 
+	     /*
 	     //Add elements to the left and right side panels
 	     leftSide.add(searchBy);
 	     leftSide.add(nameField);
 	     leftSide.add(andOr);
 	     leftSide.add(addressField);
 	     leftSide.add(searchButton);
+	     leftSide.add(clearButton);
 	     rightSide.add(results);
 	     rightSide.add(name);
 	     rightSide.add(address);
 	     rightSide.add(date);
+	     rightSide.add(viewDetails);
 	     
 	     //Add the right side and left side to the main panel
 	     mainPanel.add(leftSide);
 	     mainPanel.add(rightSide);
+	     */
 	     
+	     Insets fields=new Insets(getHeight()/30,getWidth()/60,getWidth()/25,getWidth()/50);
+	     gbc.gridx=0;
+	     gbc.gridy=0;
+	     gbc.fill=GridBagConstraints.CENTER;
+	     gbc.insets=fields;
+	     mainPanel.add(searchBy,gbc);
+	     
+	     gbc.gridx=0;
+	     gbc.gridy=1;
+	     mainPanel.add(nameField, gbc);
+	     
+	     gbc.gridx=0;
+	     gbc.gridy=2;
+	     mainPanel.add(andOr, gbc);
+	     
+	     gbc.gridx=0;
+	     gbc.gridy=3;
+	     mainPanel.add(addressField, gbc);
+	     
+	     gbc.gridx=0;
+	     gbc.gridy=4;
+	     mainPanel.add(searchButton, gbc);
+	     
+	     gbc.gridx=0;
+	     gbc.gridy=5;
+	     mainPanel.add(clearButton, gbc);
+	     
+	     gbc.gridx=1;
+	     gbc.gridy=0;
+	     gbc.insets=new Insets(10,10,10,10);
+	     mainPanel.add(results, gbc);
+	     
+	     gbc.gridx=1;
+	     gbc.gridy=1;
+	     gbc.insets=fields;
+	     mainPanel.add(name, gbc);
+	     
+	     gbc.gridx=1;
+	     gbc.gridy=2;
+	     mainPanel.add(address, gbc);
+	     
+	     gbc.gridx=1;
+	     gbc.gridy=3;
+	     mainPanel.add(date, gbc);
+	     
+	     gbc.gridx=1;
+	     gbc.gridy=4;
+	     mainPanel.add(viewDetails, gbc);
+	    
 	     //Add main panel to the canvas panel
 	     canvasPanel.add(mainPanel, BorderLayout.CENTER);
 	     canvasPanel.add(titleImageLabel, BorderLayout.NORTH);
@@ -209,9 +276,12 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  		andOr.setFont(f);
  		addressField.setFont(f);
  		searchButton.setFont(f);
+ 		clearButton.setFont(f);
  		name.setFont(f);
  		address.setFont(f);
- 		date.setFont(f); 		
+ 		date.setFont(f);
+ 		viewDetails.setFont(f);
+ 		
  		
  	}//end paint()
  	
@@ -232,8 +302,16 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  			
  			//Get the name of the facility specified by the user
  			String userSpecifiedName=nameField.getText();
+ 			
  			//Get the address of the facility specified by the user
- 			String userSpecifiedAddress=addressField.getText().toUpperCase();
+ 			String userSpecifiedAddress=addressField.getText();
+ 			
+ 			//Reset labels
+ 			name.setText("Name of facility: ");
+ 			address.setText("Address: ");
+ 			date.setText("Date of inspection: ");
+ 			image=null;
+ 			img=null;
  			
  			//Initialize result container to null
  			result=null;
@@ -402,6 +480,22 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 			//Display the image in the JLabel
 	 		results.setIcon(image);
  		}
+ 		
+ 		//Check if the clear button was clicked
+ 		if(e.getSource()==clearButton)
+ 		{
+ 			//Reset all the text fields and labels
+ 			nameField.setForeground(Color.GRAY);
+			nameField.setText("Enter Restaurant Name"); 	
+ 			addressField.setForeground(Color.GRAY);
+			addressField.setText("Enter Restaurant Street Address");
+			name.setText("Name of facility: ");
+			address.setText("Address: ");
+			date.setText("Date of inspection: ");
+			image=null;
+			img=null;
+		}
+ 		
  		repaint();
  	}
  
