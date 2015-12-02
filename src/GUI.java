@@ -44,7 +44,9 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  	private BufferedImage img;				//Holds a BufferedImage for the icon
  	private BufferedImage titleImg;			//Holds a BufferedImage for the title image
  	private ArrayList<String> addressArray;	//Holds all the addresses of a facility with multiple names
+ 	private ArrayList<String> nameArray;	//Holds the suggestions for names of facilities
  	private String[] addressStringArray;	//Holds all the addresses of a facility with multiple names
+ 	private String[] nameStringArray;		//Holds all the possible names based on user input
  	private int appWidth;					//Holds the current applet width
  	private int appHeight;					//Holds the current applet height
  	private Color backgroundColor;			//Color of the background
@@ -109,7 +111,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	     searchButton=new JButton("Search!");
 	     clearButton=new JButton("Clear All Fields");
 	     viewDetails=new JButton("View Inspection Details");
-	     nameField=new JTextField("Enter Restaurant Name",20);
+	     nameField=new JTextField("Enter Restaurant Name",15);
 	     addressField=new JTextField("Enter Restaurant Street Address",20);
 	     
 	     //Set text in text fields as gray
@@ -185,7 +187,10 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	     mainPanel.add(rightSide);
 	     */
 	     
+	     //Create insets for each component
 	     Insets fields=new Insets(getHeight()/30,getWidth()/60,getWidth()/25,getWidth()/50);
+	     
+	     //Place each component at place specified by gbc
 	     gbc.gridx=0;
 	     gbc.gridy=0;
 	     gbc.fill=GridBagConstraints.CENTER;
@@ -302,6 +307,9 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  			//Create container to hold info
  			ArrayList<BusinessTierObjects.RestaurantBasicInfo> info;
  			
+ 			//Create container to hold name suggestions
+ 			ArrayList<BusinessTierObjects.RestaurantName> names;
+ 			
  			//Get the name of the facility specified by the user
  			String userSpecifiedName=nameField.getText();
  			
@@ -317,10 +325,16 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  			
  			//Initialize result container to null
  			result=null;
+ 			result=new ArrayList<BusinessTierObjects.Restaurant>();
  			
  			//Initialize info container to null
  			info=null;
- 			 			
+ 			info= new ArrayList<BusinessTierObjects.RestaurantBasicInfo>();
+ 			
+ 			//Initialize names container to null
+ 			names=null;
+ 			//names=new ArrayList<BusinessTierObjects.RestaurantName>();
+ 			
  			//Check if both text fields are empty
  			if(userSpecifiedName.equals("Enter Restaurant Name") && 
  					userSpecifiedAddress.equals("Enter Restaurant Street Address"))
@@ -334,15 +348,74 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  				repaint();
  				return;
  			}
-
+ 			
+ 			
  			//Instantiate the BusinessTier class
  			bt=new BusinessTier();
+ 			
  			
  			
  			//See if the name field is not blank
  			if(!(userSpecifiedName.equals("Enter Restaurant Name")))
  			{
- 	 			
+ 	 			//Query the database for list of possible names based on input
+ 				System.out.println(userSpecifiedName);
+ 				names=bt.getSuggestedNames(userSpecifiedName);
+ 				
+ 				if(names==null||names.size()==0)
+ 				{
+ 					System.out.println("No names found ");
+ 				}
+ 				else if(names.size()==1)
+ 				{
+ 					userSpecifiedName=names.get(0).getName();
+ 				}
+ 				else
+ 				{
+					//Inform the user that there was more than one facility found
+					JOptionPane.showMessageDialog(
+		                    null,
+		                    "Did you mean one of the following restaurants? "
+		                    + "Please choose the desired name from among the following names.",
+		                    "Attention!",
+		                    JOptionPane.INFORMATION_MESSAGE,null);
+					
+					//Initialize the array of names
+		 			nameArray=new ArrayList<String>();
+		 			
+		 			//Fill the array list with all possible names
+		 			for(BusinessTierObjects.RestaurantName r:names)
+		 			{
+		 				nameArray.add(r.getName());
+		 			}
+		 			
+		 			//Array of strings to use with the JComboBox;
+		 			//JComboBoxes only accept arrays, not ArrayLists
+					nameStringArray=new String[nameArray.size()];
+					
+					//Copy the array list into the array
+					for(int x=0;x<nameArray.size();x++)
+					{
+						nameStringArray[x]=nameArray.get(x);
+					}
+					
+					//Create a new JComboBox with the given names
+					JComboBox namesList=new JComboBox(nameStringArray);
+					
+					//Pop up a window and prompt user to choose an address
+					JOptionPane.showMessageDialog(
+						  null, namesList, "Choose a restaurant:",
+						  JOptionPane.PLAIN_MESSAGE);
+					
+					//Get the index of the selected address
+	 				int selectedIndex=namesList.getSelectedIndex();
+	 				
+	 				//Set the text of the address label
+	 				name.setText("Name of facility: "+nameStringArray[selectedIndex]);
+	 				userSpecifiedName=nameStringArray[selectedIndex];
+ 				}
+ 				
+ 				
  				//Query the database based on the name of the facility
  	 			result=bt.getRestaurant(userSpecifiedName);
  	 			
@@ -436,15 +509,15 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  				}
  				
  				//Create a new JComboBox with the given addresses
- 				JComboBox list=new JComboBox(addressStringArray);
+ 				JComboBox addressList=new JComboBox(addressStringArray);
  				
  				//Pop up a window and prompt user to choose an address
  				JOptionPane.showMessageDialog(
- 					  null, list, "Choose an address:",
+ 					  null, addressList, "Choose an address:",
  					  JOptionPane.PLAIN_MESSAGE);
  				
  				//Get the index of the selected address
- 				int selectedIndex=list.getSelectedIndex();
+ 				int selectedIndex=addressList.getSelectedIndex();
  				
  				//Set the text of the address label
  				address.setText("Address: "+addressStringArray[selectedIndex]);
