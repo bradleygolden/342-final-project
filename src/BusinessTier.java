@@ -41,6 +41,57 @@ public class BusinessTier {
 
 	}
 	
+	public String getViolations(String name, String address, String date)
+	//PRE:
+	//POST:
+	{
+		//Data Dictionary
+		String violations;
+		Boolean hasOne;
+		
+		sql = String.format("SELECT Violations "
+							+ " FROM FoodInspections "
+							+ "WHERE AKA_Name = \'%s\' AND Address = \'%s\' "
+							+ "AND Violations IS NOT NULL "
+							+ "AND Inspection_Date = \'%s\'", name, address, date);
+		
+		result = dt.executeQuery(sql);
+		
+		try
+		{
+			violations = "";
+			hasOne = false;
+			
+			//Will add all of the violations to the string violations. The query will always return a table,
+			// even if there are nothing but null values.  If this is the case, return an empty string. Otherwise,
+			// build the string
+			while(result.next())
+			{
+				violations += result.getString("Violations");
+				hasOne = true;
+				
+				//System.out.println(result.getString("Violations").toString());
+			}
+			
+			dt.closeDB();
+			
+			if(hasOne == false)		//If an empty table is returned, then return null
+			{	
+				return null;
+			}
+			else
+			{
+				return violations;
+			}
+					
+		}
+		catch(SQLException e)
+		{
+			dt.closeDB();
+			return null;
+		}
+				
+	}
 	
 	public ArrayList<BusinessTierObjects.RestaurantName> getSuggestedNames(String name)
 	//PRE:
@@ -54,14 +105,14 @@ public class BusinessTier {
 		String stringToQuery;
 		
 		//split the string and get as much of it as we can
-		partialString = name.split("[^a-zA-Z0-9']");
+		partialString = name.split("[^a-zA-Z0-9]");
 		stringToQuery = partialString[0];
 		
 		//TODO:
 		// Make this more specific
 		sql = String.format("SELECT DISTINCT AKA_Name"
 							+ " FROM FoodInspections"
-							+ " WHERE UPPER(AKA_Name) LIKE UPPER(\'%% %s %%\')"
+							+ " WHERE UPPER(AKA_Name) LIKE UPPER(\'%%%s%%\')"
 							+ "ORDER BY AKA_Name asc", stringToQuery);
 		
 		result = dt.executeQuery(sql);
@@ -88,8 +139,6 @@ public class BusinessTier {
 		dt.closeDB();
 		return rlist;
 	}
-	
-	
 	
 	
 	public ArrayList<BusinessTierObjects.RestaurantBasicInfo> getRestaurantWithAddressField(String address)
@@ -248,7 +297,46 @@ public class BusinessTier {
 		
 		business.getRestaurant("Chartwells @ DePaul University","1 E JACKSON BLVD");
 		
-		business.getSuggestedNames("BurGER");
+		ArrayList<BusinessTierObjects.RestaurantName> names = new ArrayList<BusinessTierObjects.RestaurantName>();
+		
+		names = business.getSuggestedNames("BurGER");
+			
+		for(BusinessTierObjects.RestaurantName name : names)
+		{
+			System.out.println(name.getName());
+		}
+		
+		names = business.getSuggestedNames("McDonald's");
+		
+		for(BusinessTierObjects.RestaurantName name : names)
+		{
+			System.out.println(name.getName());
+		}
+		
+		
+		System.out.println("\n\nReturning bad values");
+		String string;
+		
+		string = business.getViolations("Mcdonalds", "1443 E 87TH ST", "2015-10-01 00:00:00.0");
+		
+		if(string == null)
+		{
+			System.out.println("There are no violations listed in the database for that restaurant");
+		}
+		else
+		{
+			System.out.print(string);
+		}
+		
+		System.out.println("Returning good values");
+		System.out.println(business.getViolations("McDonalds", "9211 S COMMERCIAL AVE", "2015-10-16 00:00:00.0"));
+	
+		//business.getViolations("Mcdonalds", "1443 E 87TH ST", "2015-10-01 00:00:00.0");
+		
+//		SELECT Violations
+//		FROM FoodInspections
+//		WHERE AKA_Name = 'Mcdonalds' AND Address = '1443 E 87TH ST' 
+//		AND Violations IS NOT NULL AND Inspection_Date = '2015-10-01 00:00:00.0'
 		
 //		DataTier dt = new DataTier("dbText.txt");
 //		
