@@ -25,19 +25,71 @@ public class BusinessTier {
 	private ResultSet result;
 	private BusinessTierObjects business;
 	private String prev;
+	private String name;
 
 	public BusinessTier()
-	// POST: Instantiates a BusinessTier object with private class member sql
-	// initialized to ""
+	// POST: Instantiates a BusinessTier object with private class members sql, businessName,
+	// address, name, and resutString initialized to " "
 	{
 		sql = "";
 		businessName = "";
 		address = "";
 		resultString = "";
+		name = " ";
 		
 		dt = new DataTier("dbText.txt");
 
 	}
+	
+	
+	public ArrayList<BusinessTierObjects.RestaurantName> getSuggestedNames(String name)
+	//PRE:
+	//POST:
+	{
+		//Data Dictionary
+		ArrayList<BusinessTierObjects.RestaurantName> rlist;
+		BusinessTierObjects.RestaurantName restaurantNameObject;
+		String aRestaurantName;
+		String [] partialString;
+		String stringToQuery;
+		
+		//split the string and get as much of it as we can
+		partialString = name.split("[^a-zA-Z0-9']");
+		stringToQuery = partialString[0];
+		
+		//TODO:
+		// Make this more specific
+		sql = String.format("SELECT DISTINCT AKA_Name"
+							+ " FROM FoodInspections"
+							+ " WHERE UPPER(AKA_Name) LIKE UPPER(\'%% %s %%\')"
+							+ "ORDER BY AKA_Name asc", stringToQuery);
+		
+		result = dt.executeQuery(sql);
+		
+		rlist = new ArrayList<BusinessTierObjects.RestaurantName>();
+		
+		try
+		{
+			while(result.next())
+			{
+				aRestaurantName = result.getString("AKA_Name");
+				restaurantNameObject = business.new RestaurantName(aRestaurantName);
+				rlist.add(restaurantNameObject);
+			}
+			
+			
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+		
+		dt.closeDB();
+		return rlist;
+	}
+	
+	
 	
 	
 	public ArrayList<BusinessTierObjects.RestaurantBasicInfo> getRestaurantWithAddressField(String address)
@@ -47,7 +99,6 @@ public class BusinessTier {
 		//Data Dictionary
 		BusinessTierObjects.RestaurantBasicInfo aRestaurant;
 		ArrayList<BusinessTierObjects.RestaurantBasicInfo> rList;
-		String name;
 		
 		sql = String.format("SELECT Results, Inspection_Date,"
 							+ "AKA_Name FROM FoodInspections "
@@ -55,6 +106,7 @@ public class BusinessTier {
 							+ "ORDER BY AKA_Name asc, Inspection_Date desc", address);
 		
 
+		
 		result = dt.executeQuery(sql);
 		
 		rList = new ArrayList<BusinessTierObjects.RestaurantBasicInfo>();
@@ -103,7 +155,7 @@ public class BusinessTier {
 		BusinessTierObjects.Restaurant aRestaurant;
 		ArrayList<BusinessTierObjects.Restaurant> rList;
 
-		// Build the sql string
+		// Build the sql string that will look for an exact match
 		sql = String.format("SELECT FoodInspections.Address, FoodInspections.Results, FoodInspections.Inspection_Date" 
 							+ " FROM FoodInspections"
 							+ " INNER JOIN"
@@ -195,6 +247,8 @@ public class BusinessTier {
 		business.getRestaurantWithAddressField("1 E JACKSON BLVD");
 		
 		business.getRestaurant("Chartwells @ DePaul University","1 E JACKSON BLVD");
+		
+		business.getSuggestedNames("BurGER");
 		
 //		DataTier dt = new DataTier("dbText.txt");
 //		

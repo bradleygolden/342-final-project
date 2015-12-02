@@ -72,6 +72,31 @@ public class BusinessTierObjects {
 		
 	}//end of Restaurant
 	
+	public class RestaurantName
+	{
+		//Data Dictionary
+		private String name;
+		
+		public RestaurantName()
+		//POST: Default RestaurantName object is constructed
+		{
+			
+		}
+		
+		public RestaurantName(String name)
+		//PRE: name is initialized 
+		//POST: RestaurantName object is instantiated with private class member name set to name
+		{
+			this.name = name;
+		}
+		
+		public String getName()
+		{
+			return name;
+		}
+		
+	}
+	
 	
 	
 	
