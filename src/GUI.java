@@ -194,6 +194,7 @@ public class GUI extends Applet implements ActionListener, FocusListener
 	     Insets fields=new Insets(getHeight()/30,getWidth()/60,getWidth()/25,getWidth()/50);
 	     
 	     //Place each component at place specified by gbc
+	     //Add searchBy specifications
 	     gbc.gridx=0;
 	     gbc.gridy=0;
 	     gbc.fill=GridBagConstraints.CENTER;
@@ -202,44 +203,64 @@ public class GUI extends Applet implements ActionListener, FocusListener
 	     
 	     gbc.gridx=0;
 	     gbc.gridy=1;
+	     
+	     //Add nameField specifications
 	     mainPanel.add(nameField, gbc);
 	     
 	     gbc.gridx=0;
 	     gbc.gridy=2;
+	     
+	     //Add mainPanel
 	     mainPanel.add(andOr, gbc);
 	     
 	     gbc.gridx=0;
 	     gbc.gridy=3;
+	     
+	     //Add addressField
 	     mainPanel.add(addressField, gbc);
 	     
 	     gbc.gridx=0;
 	     gbc.gridy=4;
+	    
+	     //Add search Button
 	     mainPanel.add(searchButton, gbc);
 	     
 	     gbc.gridx=0;
 	     gbc.gridy=5;
+	     
+	     //Add clear button
 	     mainPanel.add(clearButton, gbc);
 	     
 	     gbc.gridx=1;
 	     gbc.gridy=0;
 	     gbc.insets=new Insets(10,10,10,10);
+	     
+	     //Add results
 	     mainPanel.add(results, gbc);
 	     
 	     gbc.gridx=1;
 	     gbc.gridy=1;
 	     gbc.insets=fields;
+	     
+	     //Add results
 	     mainPanel.add(name, gbc);
 	     
 	     gbc.gridx=1;
 	     gbc.gridy=2;
+	     
+	     //Add address
 	     mainPanel.add(address, gbc);
 	     
 	     gbc.gridx=1;
 	     gbc.gridy=3;
+	     
+	     //Add date
 	     mainPanel.add(date, gbc);
 	     
 	     gbc.gridx=1;
 	     gbc.gridy=4;
+	     
+	     //Add view details
 	     mainPanel.add(viewDetails, gbc);
 	    
 	     //Add main panel to the canvas panel
@@ -401,11 +422,13 @@ public class GUI extends Applet implements ActionListener, FocusListener
  	 			//Query the database for list of possible names based on input
  				names=bt.getSuggestedNames(userSpecifiedName);
  				
+ 				//Check if the street address field is empty
  				if(!userSpecifiedAddress.equals("Enter Restaurant Street Address"))
  				{
+ 					//Query the database based on the address
  					info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
- 					
  				}
+ 				//Check if the query was empty
  				else if(names==null||names.size()==0)
  				{
  					JOptionPane.showMessageDialog(
@@ -418,10 +441,13 @@ public class GUI extends Applet implements ActionListener, FocusListener
  					repaint();
  					return;
  				}
+ 				//There is one name in the list
  				else if(names.size()==1)
  				{
+ 					//Set the name as the given name
  					userSpecifiedName=names.get(0).getName();
  				}
+ 				//Else there was more than one facility found
  				else
  				{
 					//Inform the user that there was more than one facility found
@@ -527,6 +553,7 @@ public class GUI extends Applet implements ActionListener, FocusListener
 	 			//Query the database based on the address of the facility
 	 	 		info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
 	 	 		
+	 	 		//Check if the results were null
 	 	 		if(info==null||info.size()==0)
 	 	 		{
 	 	 			JOptionPane.showMessageDialog(
@@ -540,6 +567,7 @@ public class GUI extends Applet implements ActionListener, FocusListener
 	 	 			repaint();
 	 	 			return;
 	 	 		}
+	 	 		//Else there was a query
 	 	 		else
 	 	 		{
 	 	 			//Set name as name returned from query
@@ -856,9 +884,10 @@ public class GUI extends Applet implements ActionListener, FocusListener
 	{
 		//Initialize the BufferedImage
 		img=null;
-		
+	
 		try
 		{
+			//Get the image based on the result
 			switch(result)
 			{
 				case "Pass":
