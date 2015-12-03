@@ -17,23 +17,22 @@ public class BusinessTier {
 	// Data dictionary
 	private String sql; 						// SQL query string
 	JSONArray json; 							// Object that stores the executeScalar result
-	private String businessName;
-	private String address;
-	private String resultString;
-	private String inspectionString;
-	private DataTier dt;
-	private ResultSet result;
-	private BusinessTierObjects business;
-	private String prev;
-	private String name;
-	private String stringToQuery;
-
+	private String name;						// name of the business returned from SQL Query
+	private String address;						// address of the business returned from SQL Query
+	private String resultString;				// results of the business returned from SQL Query
+	private String inspectionString;			// string of the business returned from SQL Query
+	private DataTier dt;						// class object with methods to query the database
+	private ResultSet result;					// table results of the SQL Query
+	private BusinessTierObjects business;		// class object to instantiate objects that will 
+												// be returned to the GUI
+	private String prev;						// a string to store the name 
+	private String stringToQuery;				// string that holds a parsed business name or address
+	
 	public BusinessTier()
 	// POST: Instantiates a BusinessTier object with private class members sql, businessName,
 	// address, name, and resutString initialized to " "
 	{
 		sql = "";
-		businessName = "";
 		address = "";
 		resultString = "";
 		name = " ";
@@ -44,8 +43,8 @@ public class BusinessTier {
 	}
 	
 	public String[] getViolations(String name, String address, String date)
-	//PRE:
-	//POST:
+	//PRE: name, address, and date are initialized
+	//POST: FCTVAL == String[] or null if the query failed
 	{
 		//Data Dictionary
 		String violations;
@@ -73,7 +72,6 @@ public class BusinessTier {
 				violations += result.getString("Violations");
 				hasOne = true;
 				
-				//System.out.println(result.getString("Violations").toString());
 			}
 			
 			dt.closeDB();
@@ -82,8 +80,9 @@ public class BusinessTier {
 			{	
 				return null;
 			}
-			else
-			{
+			else					// parse the violations so that each violation is an element
+			{						// in the String array to be returned
+				
 				organizedViolations = violations.split("[|]");
 				
 				return organizedViolations;
@@ -92,6 +91,7 @@ public class BusinessTier {
 		}
 		catch(SQLException e)
 		{
+			//Close the database
 			dt.closeDB();
 			return null;
 		}
@@ -99,8 +99,8 @@ public class BusinessTier {
 	}
 	
 	public ArrayList<BusinessTierObjects.RestaurantName> getSuggestedNames(String name)
-	//PRE:
-	//POST:
+	//PRE: name is initialized
+	//POST: FCTVAL == ArrayList<BusinessTierObjects.RestaurantName> or null if the query failed
 	{
 		//Data Dictionary
 		ArrayList<BusinessTierObjects.RestaurantName> rlist;
@@ -125,6 +125,8 @@ public class BusinessTier {
 		
 		try
 		{
+			//Iterate through results, obtaining the necessary data and instantiating RestaurantName
+			// objects that will be added to rlist
 			while(result.next())
 			{
 				aRestaurantName = result.getString("DBA_Name");				
@@ -134,7 +136,7 @@ public class BusinessTier {
 			}	
 			
 		}
-		catch(SQLException e)
+		catch(SQLException e)		
 		{
 			e.printStackTrace();
 			return null;
@@ -146,8 +148,8 @@ public class BusinessTier {
 	
 	
 	public ArrayList<BusinessTierObjects.RestaurantBasicInfo> getRestaurantWithAddressField(String address)
-	//PRE:
-	//POST: Returns 
+	//PRE:  address is initialized
+	//POST: FCTVAL ==  ArrayList<BusinessTierObjects.RestaurantBasicInfo> or null if query failed
 	{
 		//Data Dictionary
 		BusinessTierObjects.RestaurantBasicInfo aRestaurant;
@@ -171,12 +173,14 @@ public class BusinessTier {
 			prev = " ";
 			name = " ";
 			
+			// while iterating through result, obtain the necessary information, instantiate 
+			// a RestaurantBasicInfo object that will be added to rList. This will only add unique
+			// restaurant names
 			while(result.next())
 			{
 				 name = result.getString("DBA_Name");
 				 resultString = result.getString("Results");
 				 inspectionString = result.getString("Inspection_Date");
-				 //address = result.getString("Address");
 				 
 				 if(!prev.equals(name))					//Only add the latest inspection
 				 {
@@ -201,7 +205,7 @@ public class BusinessTier {
 	}
 
 	public ArrayList<BusinessTierObjects.Restaurant> getRestaurant(String businessName)
-	// PRE: 
+	// PRE: businessName is initialized
 	// POST: FCTVAL == ArrayList<BusinessTierObjects.Restaurant> object if query
 	// was successful, null
 	// otherwise

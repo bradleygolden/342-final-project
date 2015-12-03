@@ -27,8 +27,8 @@ public class BusinessTierObjects {
 		}
 		
 		public RestaurantBasicInfo(String result, String inspection_date, String name)
-		//PRE:
-		//POST
+		//PRE: result, inspection_date, and name are initialized
+		//POST: returns an instantiated object RestaurantBasicInfo 
 		{
 			this.result = result;
 			this.inspection_date = inspection_date;
@@ -36,16 +36,18 @@ public class BusinessTierObjects {
 		}
 		
 		public String getResult()
-		//POST: 
+		//POST: FCTVAL == returns private class member result
 		{
 			return result;
 		}
 		
 		public String getInspectionDate()
+		//POST: FCTVAL ==  private class member inspection_date
 		{
 			return inspection_date;
 		}
 		public String getName()
+		//POST: FCTVAL == private class member name
 		{
 			return name;
 		}
@@ -63,14 +65,14 @@ public class BusinessTierObjects {
 		}
 		
 		public Restaurant(String address, String result, String inspection_date, String name)
-		//POST: 
+		//POST: instantiated Restaurant object is instantiated.
 		{
 			super(result, inspection_date, name);
 			this.address = address;
 		}
 		
 		public String getAddress()
-		//POST:
+		//POST: FCTVAL == private class member address
 		{
 			return address;
 		}
@@ -97,39 +99,12 @@ public class BusinessTierObjects {
 		}
 		
 		public String getName()
+		//POST: FCTVAL == private class member name
 		{
 			return name;
 		}
 		
 	}
-	
-	
-	
-	
-//	public class RestaurantDetail extends Restaurant
-//	{
-//		//Data Dictionary
-//		private String date;
-//		private ArrayList<String> violations;
-//		
-//		public RestaurantDetail(String address, String result, String date, ArrayList<String> violations, String inspection_date)
-//		{
-//			super(address, result, inspection_date);
-//			this.date = date;
-//			this.violations = violations;
-//		}
-//		
-//		public String getDate()
-//		{
-//			return date;
-//		}
-//		
-//		public ArrayList<String> getViolations()
-//		{
-//			return violations;
-//		}
-//		
-//	}//end of class
 	
 
 }
