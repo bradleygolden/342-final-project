@@ -275,7 +275,7 @@ public class BusinessTier {
 		
 		sql = String.format("SELECT TOP 1 Results, Inspection_Date, DBA_Name, Address"
 							+" FROM FoodInspections"
-							+" WHERE REPLACE(Address, ' ', '') = REPLACE('%s', ' ', '') AND DBA_Name = \'%s\'" 
+							+" WHERE REPLACE(Address, ' ', '') = REPLACE('%s', ' ', '') AND DBA_Name LIKE('%%%s%%')" 
 							+" ORDER BY Inspection_Date desc", stringToQuery, name);
 		
 		result = dt.executeQuery(sql);
