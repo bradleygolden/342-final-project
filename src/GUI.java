@@ -327,20 +327,17 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  			image=null;
  			img=null;
  			
- 			//Initialize result container to null
- 			result=null;
+ 			//Initialize result container
  			result=new ArrayList<BusinessTierObjects.Restaurant>();
  			
- 			//Initialize info container to null
- 			info=null;
+ 			//Initialize info container
  			info= new ArrayList<BusinessTierObjects.RestaurantBasicInfo>();
  			
- 			//Initialize names container to null
- 			names=null;
+ 			//Initialize names container
  			names=new ArrayList<BusinessTierObjects.RestaurantName>();
  			
  			//Check if both text fields are empty
- 			if(userSpecifiedName.equals("Enter Restaurant Name") && 
+ 			if(userSpecifiedName.equals("Enter Restaurant Name") &&
  					userSpecifiedAddress.equals("Enter Restaurant Street Address"))
  			{
  				//Print an error message and return back to the GUI
@@ -353,11 +350,8 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  				return;
  			}
  			
- 			
  			//Instantiate the BusinessTier class
  			bt=new BusinessTier();
- 			
- 			
  			
  			//See if the name field is not blank
  			if(!(userSpecifiedName.equals("Enter Restaurant Name")))
@@ -369,7 +363,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  				
  				if(!userSpecifiedAddress.equals("Enter Restaurant Street Address"))
  				{
- 					//info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
+ 					info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
  					
  				}
  				else if(names==null||names.size()==0)
@@ -398,7 +392,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 					JOptionPane.showMessageDialog(
 		                    null,
 		                    "Did you mean one of the following restaurants? "
-		                    + "Please choose the desired name from among the following names.",
+		                    + "Please choose the desired restaurant from among the following.",
 		                    "Attention!",
 		                    JOptionPane.INFORMATION_MESSAGE,null);
 					
@@ -436,7 +430,6 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	 				name.setText("Name of facility: "+nameStringArray[selectedIndex]);
 	 				userSpecifiedName=nameStringArray[selectedIndex];
  		 			System.out.println(userSpecifiedName);
-
  				}
  				
  				
@@ -459,6 +452,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  	 	 	                    				+ " Try entering an address and searching again.",
  	 	 	                    "Attention!",
  	 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+ 	 		 			image=getImage("noData");
  	 	 				repaint();
  	 	 				return;
  	 				}
@@ -475,31 +469,59 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  	 	 				
  	 	 				//Query the database based on the address of the facility 	 				
  	 	 	 			info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
+ 	 	 	 			
+ 	 	 	 			if(info==null||info.size()==0)
+ 	 	 	 			{
+	 	 	 	 			JOptionPane.showMessageDialog(
+	 	 	 	                    null,
+	 	 	 	                  "No restaurant with the address ["+
+	 	                    		userSpecifiedAddress+"] was found in the database.",
+	 	 	 	                    "Attention!",
+	 	 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+	 	 		 			image=getImage("noData");
+	 	 	 	 			repaint();
+	 	 	 	 			return;
+ 	 	 	 			}
  	 				}
  	 			}
  			}
  			//Query the database using the address since there was no name specified
  			else
  			{
-		 			System.out.println(5);
-
+		 		System.out.println(5);
+		 		
  				//Set the name of the name label
  	 			name.setText("Name of facility: ");
  	 			
 	 			//Query the database based on the address of the facility
 	 	 		info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
 	 	 		
-	 	 		if(info==null)
+	 	 		if(info==null||info.size()==0)
 	 	 		{
 	 	 			JOptionPane.showMessageDialog(
  	 	                    null,
- 	 	                  "No restaurant with the address "+ 
-                    		userSpecifiedAddress+" was found in the database."
+ 	 	                  "No restaurant with the address ["+ 
+                    		userSpecifiedAddress+"] was found in the database."
                     		+ " Try entering a facility name and searching again.",
  	 	                    "Attention!",
  	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+	 		 		image=getImage("noData");
 	 	 			repaint();
 	 	 			return;
+	 	 		}
+	 	 		else
+	 	 		{
+	 	 			//TODO: Set name as name returned from query
+	 	 			//userSpecifiedName=info.get(0).getName();
+	 	 			
+	 	 			//Get the corresponding image to the result of the query
+	 	 			image=getImage(info.get(0).getResult());
+	 	 			
+	 	 			//Set the inspection date
+	 	 			inspectionDate=info.get(0).getInspectionDate();
+	 	 			
+	 	 			//Set the date of the date label
+	 	 			date.setText("Date of inspection: "+inspectionDate);
 	 	 		}
 
  			}
@@ -517,54 +539,57 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  	 			//Set the date of the date label
  	 			date.setText("Date of inspection: "+inspectionDate);
  			}
+ 			
  			//Check if the query returned more than one facility
  			if(result.size()>1)
  			{
-		 			System.out.println(6);
-
- 				//Inform the user that there was more than one facility found
- 				JOptionPane.showMessageDialog(
- 	                    null,
- 	                    "More than one "+userSpecifiedName+" was found. "
- 	                    + "Please choose the desired "+ 
- 	                    		userSpecifiedName+" from among the following addresses.",
- 	                    "Attention!",
- 	                    JOptionPane.INFORMATION_MESSAGE,null);
- 				
- 				//Initialize the array of addresses
- 	 			addressArray=new ArrayList<String>();
- 	 			
- 	 			//Fill the array list with all possible addresses
- 	 			for(BusinessTierObjects.Restaurant r:result)
- 	 			{
- 	 				addressArray.add(r.getAddress());
- 	 			}
- 	 			
- 	 			//Array of strings to use with the JComboBox;
- 	 			//JComboBoxes only accept arrays, not ArrayLists
- 				addressStringArray=new String[addressArray.size()];
- 				
- 				//Copy the array list into the array
- 				for(int x=0;x<addressArray.size();x++)
- 				{
- 					addressStringArray[x]=addressArray.get(x);
- 				}
- 				
- 				//Create a new JComboBox with the given addresses
- 				JComboBox addressList=new JComboBox(addressStringArray);
- 				
- 				//Pop up a window and prompt user to choose an address
- 				JOptionPane.showMessageDialog(
- 					  null, addressList, "Choose an address:",
- 					  JOptionPane.PLAIN_MESSAGE);
- 				
- 				//Get the index of the selected address
- 				int selectedIndex=addressList.getSelectedIndex();
- 				
- 				//Set the text of the address label
- 				address.setText("Address: "+addressStringArray[selectedIndex]);
- 				userSpecifiedAddress=addressStringArray[selectedIndex];
- 				
+		 		System.out.println(6);
+		 		if(userSpecifiedAddress.equals("Enter Restaurant Street Address"))
+		 		{
+	 				//Inform the user that there was more than one facility found
+	 				JOptionPane.showMessageDialog(
+	 	                    null,
+	 	                    "More than one ["+userSpecifiedName+"] was found. "
+	 	                    + "Please choose the desired ["+ 
+	 	                    		userSpecifiedName+"] from among the following addresses.",
+	 	                    "Attention!",
+	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+	 				
+	 				//Initialize the array of addresses
+	 	 			addressArray=new ArrayList<String>();
+	 	 			
+	 	 			//Fill the array list with all possible addresses
+	 	 			for(BusinessTierObjects.Restaurant r:result)
+	 	 			{
+	 	 				addressArray.add(r.getAddress());
+	 	 			}
+	 	 			
+	 	 			//Array of strings to use with the JComboBox;
+	 	 			//JComboBoxes only accept arrays, not ArrayLists
+	 				addressStringArray=new String[addressArray.size()];
+	 				
+	 				//Copy the array list into the array
+	 				for(int x=0;x<addressArray.size();x++)
+	 				{
+	 					addressStringArray[x]=addressArray.get(x);
+	 				}
+	 				
+	 				//Create a new JComboBox with the given addresses
+	 				JComboBox addressList=new JComboBox(addressStringArray);
+	 				
+	 				//Pop up a window and prompt user to choose an address
+	 				JOptionPane.showMessageDialog(
+	 					  null, addressList, "Choose an address:",
+	 					  JOptionPane.PLAIN_MESSAGE);
+	 				
+	 				//Get the index of the selected address
+	 				int selectedIndex=addressList.getSelectedIndex();
+	 				
+	 				//Set the text of the address label
+	 				address.setText("Address: "+addressStringArray[selectedIndex]);
+	 				userSpecifiedAddress=addressStringArray[selectedIndex];
+		 		}
+	 				
  				//Query the database based on the address of the facility
 	 	 		info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
 	 	 		
@@ -575,10 +600,11 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	 				JOptionPane.showMessageDialog(
 		 	                    null,
 		 	                  "No restaurant with the name ["+
-	                		userSpecifiedName+"] or the address "+userSpecifiedAddress
-	                				+ " was found in the database.",
+	                		userSpecifiedName+"] with the address ["+userSpecifiedAddress
+	                				+ "] was found in the database.",
 		 	                    "Attention!",
 		 	                    JOptionPane.INFORMATION_MESSAGE,null);
+	 		 		image=getImage("noData");
 	 	 			repaint();
 	 	 			return;
 	 	 		}
@@ -600,6 +626,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	 		
 			//Display the image in the JLabel
 	 		results.setIcon(image);
+	 		
  		}//end if(e.getSource()==searchButton) 
 
  		
@@ -675,13 +702,15 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	 				//Set the panel to GridLayout
 	 				panel.setLayout(g);
 	 				
+	 				//Create JFrame pop-up
 	 				JFrame frame=new JFrame("Violations:");
 	 			    frame.setSize(500,500);
 		 			frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		 			frame.setLayout(g);
 		 			
+		 			//Temp variable 
 		 			JTextArea temp;
-	 				
+
 	 				//Iterate through list of violations
 	 				for(String v:violations)
 	 				{
@@ -690,6 +719,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	 					frame.add(temp);
 	 				}
 	 				
+	 				//Set frame as visible
 		 			frame.setVisible(true);
 
 		 			
