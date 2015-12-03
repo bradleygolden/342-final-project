@@ -704,6 +704,7 @@ public class GUI extends Applet implements ActionListener, FocusListener
 	 				{
 	 					temp=new JTextArea("  "+v);
 	 					temp.setLineWrap(true);
+	 					temp.setEditable(false);
 	 					frame.add(temp);
 	 				}
 	 				
