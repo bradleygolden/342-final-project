@@ -29,7 +29,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 {
  	private JButton searchButton;			//Button for executing the search
  	private JButton clearButton;			//Button for clearing fields
- 	private JButton viewDetails;				//Button for viewing details
+ 	private JButton viewDetails;			//Button for viewing details
  	private JTextField nameField;		    //Holds the name of the facility
  	private JTextField addressField;		//Holds the street address of the facility
  	private JLabel searchBy;				//Label for "Search By"
@@ -47,6 +47,9 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  	private ArrayList<String> nameArray;	//Holds the suggestions for names of facilities
  	private String[] addressStringArray;	//Holds all the addresses of a facility with multiple names
  	private String[] nameStringArray;		//Holds all the possible names based on user input
+ 	private String userSpecifiedName;		//Holds name from user input
+ 	private String userSpecifiedAddress;	//Holds address from user input
+ 	private String inspectionDate;			//Holds the date for the inspection
  	private int appWidth;					//Holds the current applet width
  	private int appHeight;					//Holds the current applet height
  	private Color backgroundColor;			//Color of the background
@@ -160,6 +163,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	     addressField.addFocusListener(this);
 	     searchButton.addActionListener(this);
 	     clearButton.addActionListener(this);
+	     viewDetails.addActionListener(this);
 	
 	     //Set the background to the custom color
 	     mainPanel.setBackground(backgroundColor);
@@ -311,10 +315,10 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  			ArrayList<BusinessTierObjects.RestaurantName> names;
  			
  			//Get the name of the facility specified by the user
- 			String userSpecifiedName=nameField.getText();
+ 			userSpecifiedName=nameField.getText();
  			
  			//Get the address of the facility specified by the user
- 			String userSpecifiedAddress=addressField.getText();
+ 			userSpecifiedAddress=addressField.getText();
  			
  			//Reset labels
  			name.setText("Name of facility: ");
@@ -323,20 +327,17 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  			image=null;
  			img=null;
  			
- 			//Initialize result container to null
- 			result=null;
+ 			//Initialize result container
  			result=new ArrayList<BusinessTierObjects.Restaurant>();
  			
- 			//Initialize info container to null
- 			info=null;
+ 			//Initialize info container
  			info= new ArrayList<BusinessTierObjects.RestaurantBasicInfo>();
  			
- 			//Initialize names container to null
- 			names=null;
- 			//names=new ArrayList<BusinessTierObjects.RestaurantName>();
+ 			//Initialize names container
+ 			names=new ArrayList<BusinessTierObjects.RestaurantName>();
  			
  			//Check if both text fields are empty
- 			if(userSpecifiedName.equals("Enter Restaurant Name") && 
+ 			if(userSpecifiedName.equals("Enter Restaurant Name") &&
  					userSpecifiedAddress.equals("Enter Restaurant Street Address"))
  			{
  				//Print an error message and return back to the GUI
@@ -349,34 +350,49 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  				return;
  			}
  			
- 			
  			//Instantiate the BusinessTier class
  			bt=new BusinessTier();
- 			
- 			
  			
  			//See if the name field is not blank
  			if(!(userSpecifiedName.equals("Enter Restaurant Name")))
  			{
  	 			//Query the database for list of possible names based on input
  				System.out.println(userSpecifiedName);
+ 				
  				names=bt.getSuggestedNames(userSpecifiedName);
  				
- 				if(names==null||names.size()==0)
+ 				if(!userSpecifiedAddress.equals("Enter Restaurant Street Address"))
  				{
- 					System.out.println("No names found ");
+ 					info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
+ 					
+ 				}
+ 				else if(names==null||names.size()==0)
+ 				{
+ 					JOptionPane.showMessageDialog(
+ 	 	                    null,
+ 	 	                  "We found no matches for your search for ["+ 
+                    		userSpecifiedName+"] in the database.",
+ 	 	                    "Attention!",
+ 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+ 		 			image=getImage("noData");
+ 		 			System.out.println(1);
+ 					repaint();
+ 					return;
  				}
  				else if(names.size()==1)
  				{
+ 		 			System.out.println(2);
  					userSpecifiedName=names.get(0).getName();
  				}
  				else
  				{
+ 		 			System.out.println(3);
+
 					//Inform the user that there was more than one facility found
 					JOptionPane.showMessageDialog(
 		                    null,
 		                    "Did you mean one of the following restaurants? "
-		                    + "Please choose the desired name from among the following names.",
+		                    + "Please choose the desired restaurant from among the following.",
 		                    "Attention!",
 		                    JOptionPane.INFORMATION_MESSAGE,null);
 					
@@ -413,6 +429,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	 				//Set the text of the address label
 	 				name.setText("Name of facility: "+nameStringArray[selectedIndex]);
 	 				userSpecifiedName=nameStringArray[selectedIndex];
+ 		 			System.out.println(userSpecifiedName);
  				}
  				
  				
@@ -420,141 +437,198 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  	 			result=bt.getRestaurant(userSpecifiedName);
  	 			
  	 			//Check if the result was empty
- 	 			if((result==null||result.size()==0)&&
- 	 					userSpecifiedAddress.equals("Enter Restaurant Street Address"))
+ 	 			if((result==null||result.size()==0))
  	 			{
+ 		 			System.out.println(4);
+
+ 	 				//User did not enter a street address
+ 	 				if(userSpecifiedAddress.equals("Enter Restaurant Street Address"))
+ 	 				{
  	 				//Result was empty, so show error message
- 	 				JOptionPane.showMessageDialog(
- 	 	                    null,
- 	 	                    "No restaurant named "+ 
- 	 	                    		userSpecifiedName+" was found in the database."
- 	 	                    				+ " Try entering an address and searching again.",
- 	 	                    "Attention!",
- 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
- 	 				repaint();
- 	 				return;
+ 	 	 				JOptionPane.showMessageDialog(
+ 	 	 	                    null,
+ 	 	 	                    "No restaurant named ["+ 
+ 	 	 	                    		userSpecifiedName+"] was found in the database."
+ 	 	 	                    				+ " Try entering an address and searching again.",
+ 	 	 	                    "Attention!",
+ 	 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+ 	 		 			image=getImage("noData");
+ 	 	 				repaint();
+ 	 	 				return;
+ 	 				}
+ 	 				else
+ 	 				{
+ 	 					//Try to re-query with the address if the address field is not blank
+ 	 	 				JOptionPane.showMessageDialog(
+ 	 	 	                    null,
+ 	 	 	                  "No restaurant named ["+
+ 	                    		userSpecifiedName+"] was found in the database."+
+ 	                    			  " Attempting to re-query with the given address...",
+ 	 	 	                    "Attention!",
+ 	 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+ 	 	 				
+ 	 	 				//Query the database based on the address of the facility 	 				
+ 	 	 	 			info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
+ 	 	 	 			
+ 	 	 	 			if(info==null||info.size()==0)
+ 	 	 	 			{
+	 	 	 	 			JOptionPane.showMessageDialog(
+	 	 	 	                    null,
+	 	 	 	                  "No restaurant with the address ["+
+	 	                    		userSpecifiedAddress+"] was found in the database.",
+	 	 	 	                    "Attention!",
+	 	 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+	 	 		 			image=getImage("noData");
+	 	 	 	 			repaint();
+	 	 	 	 			return;
+ 	 	 	 			}
+ 	 				}
  	 			}
- 	 			
- 	 			//Try to re-query with the address if the address field is not blank
- 	 			if((result==null||result.size()==0)&&
- 	 					!(userSpecifiedAddress.equals("Enter Restaurant Street Address")))
- 	 			{
- 	 				JOptionPane.showMessageDialog(
- 	 	                    null,
- 	 	                  "No restaurant named "+ 
-                    		userSpecifiedName+" was found in the database."+
-                    			  " Attempting to re-query with the given address...",
- 	 	                    "Attention!",
- 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
- 	 				
- 	 				//Query the database based on the address of the facility 	 				
- 	 	 			info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
- 	 			}
- 	 			
  			}
  			//Query the database using the address since there was no name specified
  			else
  			{
+		 		System.out.println(5);
+		 		
  				//Set the name of the name label
  	 			name.setText("Name of facility: ");
  	 			
 	 			//Query the database based on the address of the facility
 	 	 		info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
 	 	 		
-	 	 		if(result==null)
+	 	 		if(info==null||info.size()==0)
 	 	 		{
 	 	 			JOptionPane.showMessageDialog(
  	 	                    null,
- 	 	                  "No restaurant with the address "+ 
-                    		userSpecifiedAddress+" was found in the database."
+ 	 	                  "No restaurant with the address ["+ 
+                    		userSpecifiedAddress+"] was found in the database."
                     		+ " Try entering a facility name and searching again.",
  	 	                    "Attention!",
  	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+	 		 		image=getImage("noData");
 	 	 			repaint();
 	 	 			return;
+	 	 		}
+	 	 		else
+	 	 		{
+	 	 			//TODO: Set name as name returned from query
+	 	 			//userSpecifiedName=info.get(0).getName();
+	 	 			
+	 	 			//Get the corresponding image to the result of the query
+	 	 			image=getImage(info.get(0).getResult());
+	 	 			
+	 	 			//Set the inspection date
+	 	 			inspectionDate=info.get(0).getInspectionDate();
+	 	 			
+	 	 			//Set the date of the date label
+	 	 			date.setText("Date of inspection: "+inspectionDate);
 	 	 		}
 
  			}
  			
+ 			if(result.size()==1)
+ 			{
+ 				userSpecifiedAddress=result.get(0).getAddress();
+ 				
+ 				//Get the corresponding image to the result of the query
+ 	 			image=getImage(result.get(0).getResult());
+ 	 			
+ 	 			//Set the inspection date
+ 	 			inspectionDate=result.get(0).getInspectionDate();
+ 	 			
+ 	 			//Set the date of the date label
+ 	 			date.setText("Date of inspection: "+inspectionDate);
+ 			}
  			
  			//Check if the query returned more than one facility
  			if(result.size()>1)
  			{
- 				//Inform the user that there was more than one facility found
- 				JOptionPane.showMessageDialog(
- 	                    null,
- 	                    "More than one "+userSpecifiedName+" was found. "
- 	                    + "Please choose the desired "+ 
- 	                    		userSpecifiedName+" from among the following addresses.",
- 	                    "Attention!",
- 	                    JOptionPane.INFORMATION_MESSAGE,null);
- 				
- 				//Initialize the array of addresses
- 	 			addressArray=new ArrayList<String>();
- 	 			
- 	 			//Fill the array list with all possible addresses
- 	 			for(BusinessTierObjects.Restaurant r:result)
- 	 			{
- 	 				addressArray.add(r.getAddress());
- 	 			}
- 	 			
- 	 			//Array of strings to use with the JComboBox;
- 	 			//JComboBoxes only accept arrays, not ArrayLists
- 				addressStringArray=new String[addressArray.size()];
- 				
- 				//Copy the array list into the array
- 				for(int x=0;x<addressArray.size();x++)
- 				{
- 					addressStringArray[x]=addressArray.get(x);
- 				}
- 				
- 				//Create a new JComboBox with the given addresses
- 				JComboBox addressList=new JComboBox(addressStringArray);
- 				
- 				//Pop up a window and prompt user to choose an address
- 				JOptionPane.showMessageDialog(
- 					  null, addressList, "Choose an address:",
- 					  JOptionPane.PLAIN_MESSAGE);
- 				
- 				//Get the index of the selected address
- 				int selectedIndex=addressList.getSelectedIndex();
- 				
- 				//Set the text of the address label
- 				address.setText("Address: "+addressStringArray[selectedIndex]);
- 				userSpecifiedAddress=addressStringArray[selectedIndex];
- 				
- 				//Query the database based on the address of the facility
-	 	 		info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
- 			
- 			}
- 			
- 			if(info==null||info.size()==0){
- 				JOptionPane.showMessageDialog(
+		 		System.out.println(6);
+		 		if(userSpecifiedAddress.equals("Enter Restaurant Street Address"))
+		 		{
+	 				//Inform the user that there was more than one facility found
+	 				JOptionPane.showMessageDialog(
 	 	                    null,
-	 	                  "No restaurant with the name "+ 
-                		userSpecifiedName+" or the address "+userSpecifiedAddress
-                				+ " was found in the database.",
+	 	                    "More than one ["+userSpecifiedName+"] was found. "
+	 	                    + "Please choose the desired ["+ 
+	 	                    		userSpecifiedName+"] from among the following addresses.",
 	 	                    "Attention!",
 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
- 	 			repaint();
- 	 			return;
+	 				
+	 				//Initialize the array of addresses
+	 	 			addressArray=new ArrayList<String>();
+	 	 			
+	 	 			//Fill the array list with all possible addresses
+	 	 			for(BusinessTierObjects.Restaurant r:result)
+	 	 			{
+	 	 				addressArray.add(r.getAddress());
+	 	 			}
+	 	 			
+	 	 			//Array of strings to use with the JComboBox;
+	 	 			//JComboBoxes only accept arrays, not ArrayLists
+	 				addressStringArray=new String[addressArray.size()];
+	 				
+	 				//Copy the array list into the array
+	 				for(int x=0;x<addressArray.size();x++)
+	 				{
+	 					addressStringArray[x]=addressArray.get(x);
+	 				}
+	 				
+	 				//Create a new JComboBox with the given addresses
+	 				JComboBox addressList=new JComboBox(addressStringArray);
+	 				
+	 				//Pop up a window and prompt user to choose an address
+	 				JOptionPane.showMessageDialog(
+	 					  null, addressList, "Choose an address:",
+	 					  JOptionPane.PLAIN_MESSAGE);
+	 				
+	 				//Get the index of the selected address
+	 				int selectedIndex=addressList.getSelectedIndex();
+	 				
+	 				//Set the text of the address label
+	 				address.setText("Address: "+addressStringArray[selectedIndex]);
+	 				userSpecifiedAddress=addressStringArray[selectedIndex];
+		 		}
+	 				
+ 				//Query the database based on the address of the facility
+	 	 		info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
+	 	 		
+	 	 		if(info==null||info.size()==0)
+	 	 		{
+		 			System.out.println(7);
+
+	 				JOptionPane.showMessageDialog(
+		 	                    null,
+		 	                  "No restaurant with the name ["+
+	                		userSpecifiedName+"] with the address ["+userSpecifiedAddress
+	                				+ "] was found in the database.",
+		 	                    "Attention!",
+		 	                    JOptionPane.INFORMATION_MESSAGE,null);
+	 		 		image=getImage("noData");
+	 	 			repaint();
+	 	 			return;
+	 	 		}
+	 			else
+	 			{
+	 				//Get the corresponding image to the result of the query
+	 	 			image=getImage(info.get(0).getResult());
+	 	 			
+	 	 			//Set the date of the date label
+	 	 			inspectionDate=info.get(0).getInspectionDate();
+	 	 			date.setText("Date of inspection: "+inspectionDate);
+	 			}
  			}
+ 			
+ 		
  			//Set the name and address of the appropriate labels
 	 		name.setText("Name of facility: "+userSpecifiedName);
 	 		address.setText("Address: "+userSpecifiedAddress);
-
 	 		
- 			//Get the corresponding image to the result of the query
- 			image=getImage(info.get(0).getResult());
- 			
- 			System.out.println(info.get(0).getResult());
-			
- 			//Set the date of the date label
- 			date.setText("Date of inspection: "+info.get(0).getInspectionDate());
- 			
 			//Display the image in the JLabel
 	 		results.setIcon(image);
- 		}
+	 		
+ 		}//end if(e.getSource()==searchButton) 
+
  		
  		//Check if the clear button was clicked
  		if(e.getSource()==clearButton)
@@ -569,10 +643,96 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 			date.setText("Date of inspection: ");
 			image=null;
 			img=null;
-		}
+ 		}//end if(e.getSource()==clearButton)
+ 		
+ 		if(e.getSource()==viewDetails)
+ 		{
+ 			//BusinessTier declaration
+ 			BusinessTier bt;
+ 			
+ 			//String array to hold violations
+ 			String[] violations;
+			
+ 			//Instantiate BusinessTier
+ 			bt=new BusinessTier();
+ 			
+ 			//If there is no search, give an error messsage
+ 			if(name.getText().equals("Name of facility: ") || 
+ 					address.getText().equals("Address: ") ||
+ 					date.getText().equals("Date of inspection: "))
+ 			{
+ 				JOptionPane.showMessageDialog(
+ 	                    null,
+ 	                  "There are no details to display!",
+ 	                    "Attention!",
+ 	                    JOptionPane.ERROR_MESSAGE,null);
+	 			repaint();
+	 			return;
+ 			}
+ 			//There was a query, so display violations
+ 			else
+ 			{
+ 				//query the database for the violations
+ 				violations=bt.getViolations(userSpecifiedName,
+ 						userSpecifiedAddress, inspectionDate);
+ 				//Check if there are no violations
+ 				if(violations==null||violations.length==0)
+ 				{
+ 					//Give an error message
+ 					JOptionPane.showMessageDialog(
+ 	 	                    null,
+ 	 	                  "There are no details to display!",
+ 	 	                    "Attention!",
+ 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+ 		 			repaint();
+ 		 			return;
+ 				}
+ 				//There are violations, so display them
+ 				else
+ 				{
+ 					//Get number of violations
+ 					int numViolations=violations.length;
+ 					
+ 					//Create a new JPanel
+	 				JPanel panel=new JPanel();
+	 				
+	 				//Create a new GridLayout
+	 				GridLayout g=new GridLayout(numViolations+2,1);
+	 				
+	 				//Set the panel to GridLayout
+	 				panel.setLayout(g);
+	 				
+	 				//Create JFrame pop-up
+	 				JFrame frame=new JFrame("Violations:");
+	 			    frame.setSize(500,500);
+		 			frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		 			frame.setLayout(g);
+		 			
+		 			//Temp variable 
+		 			JTextArea temp;
+
+	 				//Iterate through list of violations
+	 				for(String v:violations)
+	 				{
+	 					temp=new JTextArea("  "+v);
+	 					temp.setLineWrap(true);
+	 					frame.add(temp);
+	 				}
+	 				
+	 				//Set frame as visible
+		 			frame.setVisible(true);
+
+		 			
+ 				}//end else (there are violations)
+ 				
+ 			}//end else (there was a query)
+ 			
+ 		}//end if(e.getSource()==viewDetails)
+
  		
  		repaint();
- 	}
+ 	}//end actionPerformed(ActionEvent e)
+ 
  
     
  	public void focusGained(FocusEvent f)
