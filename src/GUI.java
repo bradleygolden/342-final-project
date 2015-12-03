@@ -203,46 +203,64 @@ public class GUI extends Applet implements ActionListener, FocusListener
 	     
 	     gbc.gridx=0;
 	     gbc.gridy=1;
+	     
 	     //Add nameField specifications
 	     mainPanel.add(nameField, gbc);
 	     
 	     gbc.gridx=0;
 	     gbc.gridy=2;
+	     
 	     //Add mainPanel
 	     mainPanel.add(andOr, gbc);
 	     
 	     gbc.gridx=0;
 	     gbc.gridy=3;
+	     
+	     //Add addressField
 	     mainPanel.add(addressField, gbc);
 	     
 	     gbc.gridx=0;
 	     gbc.gridy=4;
+	    
+	     //Add search Button
 	     mainPanel.add(searchButton, gbc);
 	     
 	     gbc.gridx=0;
 	     gbc.gridy=5;
+	     
+	     //Add clear button
 	     mainPanel.add(clearButton, gbc);
 	     
 	     gbc.gridx=1;
 	     gbc.gridy=0;
 	     gbc.insets=new Insets(10,10,10,10);
+	     
+	     //Add results
 	     mainPanel.add(results, gbc);
 	     
 	     gbc.gridx=1;
 	     gbc.gridy=1;
 	     gbc.insets=fields;
+	     
+	     //Add results
 	     mainPanel.add(name, gbc);
 	     
 	     gbc.gridx=1;
 	     gbc.gridy=2;
+	     
+	     //Add address
 	     mainPanel.add(address, gbc);
 	     
 	     gbc.gridx=1;
 	     gbc.gridy=3;
+	     
+	     //Add date
 	     mainPanel.add(date, gbc);
 	     
 	     gbc.gridx=1;
 	     gbc.gridy=4;
+	     
+	     //Add view details
 	     mainPanel.add(viewDetails, gbc);
 	    
 	     //Add main panel to the canvas panel
