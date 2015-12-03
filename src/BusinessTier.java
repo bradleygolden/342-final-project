@@ -175,7 +175,7 @@ public class BusinessTier {
 				 
 				 if(!prev.equals(name))					//Only add the latest inspection
 				 {
-					 aRestaurant = business.new RestaurantBasicInfo(resultString, inspectionString);
+					 aRestaurant = business.new RestaurantBasicInfo(resultString, inspectionString, name);
 					 rList.add(aRestaurant);
 				 }
 
@@ -209,8 +209,8 @@ public class BusinessTier {
 		stringQuery = businessName.replace("'", "''");
 		
 		// Build the sql string that will look for an exact match
-		sql = String.format("SELECT FoodInspections.Address, FoodInspections.Results, FoodInspections.Inspection_Date" 
-							+ " FROM FoodInspections"
+		sql = String.format("SELECT FoodInspections.Address, FoodInspections.Results, FoodInspections.Inspection_Date," 
+							+ " FoodInspections.DBA_Name FROM FoodInspections"
 							+ " INNER JOIN"
 							+" (SELECT Address, max(Inspection_Date) AS Inspection_Date"
 							+" FROM FoodInspections" 
@@ -234,10 +234,11 @@ public class BusinessTier {
 				 address = result.getString("Address");
 				 resultString = result.getString("Results");
 				 inspectionString = result.getString("Inspection_Date");
+				 name = result.getString("DBA_Name");
 				 
 				 if(!prev.equals(address))					//Only add the latest inspection
 				 {
-					 aRestaurant = business.new Restaurant(address, resultString, inspectionString);
+					 aRestaurant = business.new Restaurant(address, resultString, inspectionString, name);
 					 rList.add(aRestaurant);
 				 }
 
@@ -266,7 +267,7 @@ public class BusinessTier {
 	{
 		
 		
-		sql = String.format("SELECT TOP 1 Results, Inspection_Date"
+		sql = String.format("SELECT TOP 1 Results, Inspection_Date, DBA_Name"
 							+" FROM FoodInspections"
 							+" WHERE Address = \'%s\' AND DBA_Name = \'%s\'" 
 							+" ORDER BY Inspection_Date desc", address, name);
@@ -279,8 +280,9 @@ public class BusinessTier {
 			{
 				resultString = result.getString("Results");
 				inspectionString = result.getString("Inspection_Date");
+				name = result.getString("DBA_Name");
 				
-				BusinessTierObjects.RestaurantBasicInfo aRestaurant = business.new RestaurantBasicInfo(resultString, inspectionString);
+				BusinessTierObjects.RestaurantBasicInfo aRestaurant = business.new RestaurantBasicInfo(resultString, inspectionString, name);
 				dt.closeDB();
 				return aRestaurant;
 			}
@@ -301,51 +303,50 @@ public class BusinessTier {
 	{
 		BusinessTier business = new BusinessTier();
 		
-//		business.getRestaurant("Subway");
-//		
-//		business.getRestaurantWithAddressField("1 E JACKSON BLVD");
-//		
-//		business.getRestaurant("Chartwells @ DePaul University","1 E JACKSON BLVD");
-//		
-//		ArrayList<BusinessTierObjects.RestaurantName> names = new ArrayList<BusinessTierObjects.RestaurantName>();
-//		
-////		names = business.getSuggestedNames("BurGER");
-////			
-////		for(BusinessTierObjects.RestaurantName name : names)
-////		{
-////			System.out.println(name.getName());
-////		}
-//		
-//		names = business.getSuggestedNames("McDonald's");
-//		
+		business.getRestaurant("Subway");
+		
+		business.getRestaurantWithAddressField("1 E JACKSON BLVD");
+		
+		business.getRestaurant("Chartwells @ DePaul University","1 E JACKSON BLVD");
+		
+		ArrayList<BusinessTierObjects.RestaurantName> names = new ArrayList<BusinessTierObjects.RestaurantName>();
+		
+//		names = business.getSuggestedNames("BurGER");
+//			
 //		for(BusinessTierObjects.RestaurantName name : names)
 //		{
 //			System.out.println(name.getName());
-//		}
-//		
-//		names = business.getSuggestedNames("Subway");
-//		
-//		for(BusinessTierObjects.RestaurantName name : names)
-//		{
-//			System.out.println(name.getName());
-//		}
-//		
-//		System.out.println("\n\nReturning bad values");
-//		String string;
-//		
-//		string = business.getViolations("Mcdonalds", "1443 E 87TH ST", "2015-10-01 00:00:00.0");
-//		
-//		if(string == null)
-//		{
-//			System.out.println("There are no violations listed in the database for that restaurant");
-//		}
-//		else
-//		{
-//			System.out.print(string);
 //		}
 		
+		names = business.getSuggestedNames("McDonald's");
+		
+		for(BusinessTierObjects.RestaurantName name : names)
+		{
+			System.out.println(name.getName());
+		}
+		
+		names = business.getSuggestedNames("Subway");
+		
+		for(BusinessTierObjects.RestaurantName name : names)
+		{
+			System.out.println(name.getName());
+		}
+		
+		System.out.println("\n\nReturning bad values");
+		String[] string;
+		
+		string = business.getViolations("Mcdonalds", "1443 E 87TH ST", "2015-10-01 00:00:00.0");
+		
+		if(string == null)
+		{
+			System.out.println("There are no violations listed in the database for that restaurant");
+		}
+		else
+		{
+			System.out.print(string);
+		}
+		
 		System.out.println("Returning good values");
-		System.out.println(business.getViolations("McDonalds", "3615 W IRVING PARK RD", "2015-10-22 00:00:00.0"));
 	
 		//business.getViolations("Mcdonalds", "1443 E 87TH ST", "2015-10-01 00:00:00.0");
 		

@@ -18,6 +18,7 @@ public class BusinessTierObjects {
 	{
 		private String result;
 		private String inspection_date;
+		private String name;
 		
 		public RestaurantBasicInfo()
 		//POST: Default Restaurant object is created
@@ -25,12 +26,13 @@ public class BusinessTierObjects {
 			
 		}
 		
-		public RestaurantBasicInfo(String result, String inspection_date)
+		public RestaurantBasicInfo(String result, String inspection_date, String name)
 		//PRE:
 		//POST
 		{
 			this.result = result;
 			this.inspection_date = inspection_date;
+			this.name = name;
 		}
 		
 		public String getResult()
@@ -42,6 +44,10 @@ public class BusinessTierObjects {
 		public String getInspectionDate()
 		{
 			return inspection_date;
+		}
+		public String getName()
+		{
+			return name;
 		}
 	}
 	
@@ -56,10 +62,10 @@ public class BusinessTierObjects {
 			
 		}
 		
-		public Restaurant(String address, String result, String inspection_date)
+		public Restaurant(String address, String result, String inspection_date, String name)
 		//POST: 
 		{
-			super(result, inspection_date);
+			super(result, inspection_date, name);
 			this.address = address;
 		}
 		
