@@ -26,6 +26,7 @@ public class BusinessTier {
 	private BusinessTierObjects business;
 	private String prev;
 	private String name;
+	private String stringToQuery;
 
 	public BusinessTier()
 	// POST: Instantiates a BusinessTier object with private class members sql, businessName,
@@ -106,7 +107,7 @@ public class BusinessTier {
 		BusinessTierObjects.RestaurantName restaurantNameObject;
 		String aRestaurantName;
 		String [] partialString;
-		String stringToQuery;
+
 		
 		//split the string and get as much of it as we can
 		partialString = name.split("[^a-zA-Z0-9]");
@@ -151,6 +152,8 @@ public class BusinessTier {
 		//Data Dictionary
 		BusinessTierObjects.RestaurantBasicInfo aRestaurant;
 		ArrayList<BusinessTierObjects.RestaurantBasicInfo> rList;
+		
+		stringToQuery = address.replace(".", "");
 		
 		sql = String.format("SELECT Results, Inspection_Date,"
 							+ " DBA_Name FROM FoodInspections "
@@ -263,10 +266,10 @@ public class BusinessTier {
 
 	}// end of method
 	
-	public BusinessTierObjects.RestaurantBasicInfo getRestaurant(String name, String address)
+	public BusinessTierObjects.Restaurant getRestaurant(String name, String address)
 	{
 		
-		sql = String.format("SELECT TOP 1 Results, Inspection_Date, DBA_Name"
+		sql = String.format("SELECT TOP 1 Results, Inspection_Date, DBA_Name, Address"
 							+" FROM FoodInspections"
 							+" WHERE Address = \'%s\' AND DBA_Name = \'%s\'" 
 							+" ORDER BY Inspection_Date desc", address, name);
@@ -280,8 +283,9 @@ public class BusinessTier {
 				resultString = result.getString("Results");
 				inspectionString = result.getString("Inspection_Date");
 				name = result.getString("DBA_Name");
+				address = result.getString("Address");
 				
-				BusinessTierObjects.RestaurantBasicInfo aRestaurant = business.new RestaurantBasicInfo(resultString, inspectionString, name);
+				BusinessTierObjects.Restaurant aRestaurant = business.new Restaurant(address, resultString, inspectionString, name);
 				dt.closeDB();
 				return aRestaurant;
 			}
@@ -304,7 +308,7 @@ public class BusinessTier {
 		
 		business.getRestaurant("Subway");
 		
-		business.getRestaurantWithAddressField("1 E JACKSON BLVD");
+		business.getRestaurantWithAddressField("1 E.     JACKSON BLVD");
 		
 		business.getRestaurant("Chartwells @ DePaul University","1 E JACKSON BLVD");
 		
