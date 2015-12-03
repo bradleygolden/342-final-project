@@ -154,13 +154,14 @@ public class BusinessTier {
 		ArrayList<BusinessTierObjects.RestaurantBasicInfo> rList;
 		
 		stringToQuery = address.replace(".", "");
-		
+				
 		sql = String.format("SELECT Results, Inspection_Date,"
-							+ " DBA_Name FROM FoodInspections "
-							+ " WHERE Address = \'%s\' AND Results IS NOT NULL AND Inspection_Date IS NOT NULL"
-							+ " AND DBA_Name IS NOT NULL"
-							+ " ORDER BY DBA_Name asc, Inspection_Date desc", address);
+				+ " DBA_Name, Address FROM FoodInspections "
+				+ " WHERE REPLACE(Address, ' ', '') = REPLACE('%s', ' ', '') AND Results IS NOT NULL AND Inspection_Date IS NOT NULL"
+				+ " AND DBA_Name IS NOT NULL"
+				+ " ORDER BY DBA_Name asc, Inspection_Date desc", stringToQuery);
 		
+
 		result = dt.executeQuery(sql);
 		
 		rList = new ArrayList<BusinessTierObjects.RestaurantBasicInfo>();
@@ -175,6 +176,7 @@ public class BusinessTier {
 				 name = result.getString("DBA_Name");
 				 resultString = result.getString("Results");
 				 inspectionString = result.getString("Inspection_Date");
+				 //address = result.getString("Address");
 				 
 				 if(!prev.equals(name))					//Only add the latest inspection
 				 {
@@ -269,10 +271,12 @@ public class BusinessTier {
 	public BusinessTierObjects.Restaurant getRestaurant(String name, String address)
 	{
 		
+		stringToQuery = address.replace(".", "");
+		
 		sql = String.format("SELECT TOP 1 Results, Inspection_Date, DBA_Name, Address"
 							+" FROM FoodInspections"
-							+" WHERE Address = \'%s\' AND DBA_Name = \'%s\'" 
-							+" ORDER BY Inspection_Date desc", address, name);
+							+" WHERE REPLACE(Address, ' ', '') = REPLACE('%s', ' ', '') AND DBA_Name = \'%s\'" 
+							+" ORDER BY Inspection_Date desc", stringToQuery, name);
 		
 		result = dt.executeQuery(sql);
 		
@@ -310,7 +314,7 @@ public class BusinessTier {
 		
 		business.getRestaurantWithAddressField("1 E.     JACKSON BLVD");
 		
-		business.getRestaurant("Chartwells @ DePaul University","1 E JACKSON BLVD");
+		business.getRestaurant("Chartwells @ DePaul University","1 E.     JACKSON BLVD");
 		
 		ArrayList<BusinessTierObjects.RestaurantName> names = new ArrayList<BusinessTierObjects.RestaurantName>();
 		
