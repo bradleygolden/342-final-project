@@ -47,9 +47,10 @@ public class BusinessTier {
 	//POST: FCTVAL == String[] or null if the query failed
 	{
 		//Data Dictionary
-		String violations;
-		Boolean hasOne;
-		String[] organizedViolations;
+		String violations;				// string to store the violations
+		Boolean hasOne;					// value to check if the returned table has values (query 
+										// always returns a table, even if empty
+		String[] organizedViolations;	// String array to store parsed violations
 		
 		sql = String.format("SELECT Violations "
 							+ " FROM FoodInspections "
@@ -103,10 +104,13 @@ public class BusinessTier {
 	//POST: FCTVAL == ArrayList<BusinessTierObjects.RestaurantName> or null if the query failed
 	{
 		//Data Dictionary
-		ArrayList<BusinessTierObjects.RestaurantName> rlist;
-		BusinessTierObjects.RestaurantName restaurantNameObject;
-		String aRestaurantName;
-		String [] partialString;
+		ArrayList<BusinessTierObjects.RestaurantName> rlist;			//ArrayList to store the
+																		// BusinessTierObjects.RestaurantName objects
+		BusinessTierObjects.RestaurantName restaurantNameObject;		//Stores instantiated 
+																		//BusinessTierObjects.RestaurantName object
+		String aRestaurantName;											//Name of the restaurant
+		String [] partialString;										//String array to store parsed
+																		// restraurant name
 
 		
 		//split the string and get as much of it as we can
@@ -273,6 +277,8 @@ public class BusinessTier {
 	}// end of method
 	
 	public BusinessTierObjects.Restaurant getRestaurant(String name, String address)
+	//PRE: name and address are initialized
+	//POST: FCTVAL == BusinessTierObjects.Restaurant object, null if the query fails
 	{
 		
 		stringToQuery = address.replace(".", "");
@@ -321,14 +327,7 @@ public class BusinessTier {
 		business.getRestaurant("Chartwells @ DePaul University","1 E.     JACKSON BLVD");
 		
 		ArrayList<BusinessTierObjects.RestaurantName> names = new ArrayList<BusinessTierObjects.RestaurantName>();
-		
-//		names = business.getSuggestedNames("BurGER");
-//			
-//		for(BusinessTierObjects.RestaurantName name : names)
-//		{
-//			System.out.println(name.getName());
-//		}
-		
+				
 		names = business.getSuggestedNames("McDonald's");
 		
 		for(BusinessTierObjects.RestaurantName name : names)
