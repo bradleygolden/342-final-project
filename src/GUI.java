@@ -29,7 +29,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 {
  	private JButton searchButton;			//Button for executing the search
  	private JButton clearButton;			//Button for clearing fields
- 	private JButton viewDetails;				//Button for viewing details
+ 	private JButton viewDetails;			//Button for viewing details
  	private JTextField nameField;		    //Holds the name of the facility
  	private JTextField addressField;		//Holds the street address of the facility
  	private JLabel searchBy;				//Label for "Search By"
@@ -47,6 +47,9 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  	private ArrayList<String> nameArray;	//Holds the suggestions for names of facilities
  	private String[] addressStringArray;	//Holds all the addresses of a facility with multiple names
  	private String[] nameStringArray;		//Holds all the possible names based on user input
+ 	private String userSpecifiedName;		//Holds name from user input
+ 	private String userSpecifiedAddress;	//Holds address from user input
+ 	private String inspectionDate;			//Holds the date for the inspection
  	private int appWidth;					//Holds the current applet width
  	private int appHeight;					//Holds the current applet height
  	private Color backgroundColor;			//Color of the background
@@ -160,6 +163,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	     addressField.addFocusListener(this);
 	     searchButton.addActionListener(this);
 	     clearButton.addActionListener(this);
+	     viewDetails.addActionListener(this);
 	
 	     //Set the background to the custom color
 	     mainPanel.setBackground(backgroundColor);
@@ -311,10 +315,10 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  			ArrayList<BusinessTierObjects.RestaurantName> names;
  			
  			//Get the name of the facility specified by the user
- 			String userSpecifiedName=nameField.getText();
+ 			userSpecifiedName=nameField.getText();
  			
  			//Get the address of the facility specified by the user
- 			String userSpecifiedAddress=addressField.getText();
+ 			userSpecifiedAddress=addressField.getText();
  			
  			//Reset labels
  			name.setText("Name of facility: ");
@@ -507,8 +511,11 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  				//Get the corresponding image to the result of the query
  	 			image=getImage(result.get(0).getResult());
  	 			
+ 	 			//Set the inspection date
+ 	 			inspectionDate=result.get(0).getInspectionDate();
+ 	 			
  	 			//Set the date of the date label
- 	 			date.setText("Date of inspection: "+result.get(0).getInspectionDate());
+ 	 			date.setText("Date of inspection: "+inspectionDate);
  			}
  			//Check if the query returned more than one facility
  			if(result.size()>1)
@@ -581,7 +588,8 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	 	 			image=getImage(info.get(0).getResult());
 	 	 			
 	 	 			//Set the date of the date label
-	 	 			date.setText("Date of inspection: "+info.get(0).getInspectionDate());
+	 	 			inspectionDate=info.get(0).getInspectionDate();
+	 	 			date.setText("Date of inspection: "+inspectionDate);
 	 			}
  			}
  			
@@ -592,7 +600,8 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	 		
 			//Display the image in the JLabel
 	 		results.setIcon(image);
- 		}
+ 		}//end if(e.getSource()==searchButton) 
+
  		
  		//Check if the clear button was clicked
  		if(e.getSource()==clearButton)
@@ -607,10 +616,93 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 			date.setText("Date of inspection: ");
 			image=null;
 			img=null;
-		}
+ 		}//end if(e.getSource()==clearButton)
+ 		
+ 		if(e.getSource()==viewDetails)
+ 		{
+ 			//BusinessTier declaration
+ 			BusinessTier bt;
+ 			
+ 			//String array to hold violations
+ 			String[] violations;
+			
+ 			//Instantiate BusinessTier
+ 			bt=new BusinessTier();
+ 			
+ 			//If there is no search, give an error messsage
+ 			if(name.getText().equals("Name of facility: ") || 
+ 					address.getText().equals("Address: ") ||
+ 					date.getText().equals("Date of inspection: "))
+ 			{
+ 				JOptionPane.showMessageDialog(
+ 	                    null,
+ 	                  "There are no details to display!",
+ 	                    "Attention!",
+ 	                    JOptionPane.ERROR_MESSAGE,null);
+	 			repaint();
+	 			return;
+ 			}
+ 			//There was a query, so display violations
+ 			else
+ 			{
+ 				//query the database for the violations
+ 				violations=bt.getViolations(userSpecifiedName,
+ 						userSpecifiedAddress, inspectionDate);
+ 				//Check if there are no violations
+ 				if(violations==null||violations.length==0)
+ 				{
+ 					//Give an error message
+ 					JOptionPane.showMessageDialog(
+ 	 	                    null,
+ 	 	                  "There are no details to display!",
+ 	 	                    "Attention!",
+ 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+ 		 			repaint();
+ 		 			return;
+ 				}
+ 				//There are violations, so display them
+ 				else
+ 				{
+ 					//Get number of violations
+ 					int numViolations=violations.length;
+ 					
+ 					//Create a new JPanel
+	 				JPanel panel=new JPanel();
+	 				
+	 				//Create a new GridLayout
+	 				GridLayout g=new GridLayout(numViolations+2,1);
+	 				
+	 				//Set the panel to GridLayout
+	 				panel.setLayout(g);
+	 				
+	 				JFrame frame=new JFrame("Violations:");
+	 			    frame.setSize(500,500);
+		 			frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		 			frame.setLayout(g);
+		 			
+		 			JTextArea temp;
+	 				
+	 				//Iterate through list of violations
+	 				for(String v:violations)
+	 				{
+	 					temp=new JTextArea("  "+v);
+	 					temp.setLineWrap(true);
+	 					frame.add(temp);
+	 				}
+	 				
+		 			frame.setVisible(true);
+
+		 			
+ 				}//end else (there are violations)
+ 				
+ 			}//end else (there was a query)
+ 			
+ 		}//end if(e.getSource()==viewDetails)
+
  		
  		repaint();
- 	}
+ 	}//end actionPerformed(ActionEvent e)
+ 
  
     
  	public void focusGained(FocusEvent f)
