@@ -266,7 +266,6 @@ public class BusinessTier {
 	public BusinessTierObjects.RestaurantBasicInfo getRestaurant(String name, String address)
 	{
 		
-		
 		sql = String.format("SELECT TOP 1 Results, Inspection_Date, DBA_Name"
 							+" FROM FoodInspections"
 							+" WHERE Address = \'%s\' AND DBA_Name = \'%s\'" 
