@@ -69,8 +69,8 @@ public class GUI extends Applet implements ActionListener, FocusListener
 		 GridBagLayout gBLayout=new GridBagLayout();
 		 GridBagConstraints gbc=new GridBagConstraints();
 		
-		 //Set the initial size to 600x500
-		 setSize(600,500);
+		 //Set the initial size to 800x600
+		 setSize(800,600);
 		 
 		 //Set the color to a custom color
 		 //backgroundColor=new Color(126,209,241);
@@ -313,6 +313,9 @@ public class GUI extends Applet implements ActionListener, FocusListener
  			//Create container to hold name suggestions
  			ArrayList<BusinessTierObjects.RestaurantName> names;
  			
+ 			//Create variable for query with name and address
+ 			BusinessTierObjects.Restaurant bi;
+ 			
  			//Get the name of the facility specified by the user
  			userSpecifiedName=nameField.getText();
  			
@@ -335,6 +338,12 @@ public class GUI extends Applet implements ActionListener, FocusListener
  			//Initialize names container
  			names=new ArrayList<BusinessTierObjects.RestaurantName>();
  			
+ 			//Initialize variable for 
+ 			bi=null;
+ 			
+ 			//Instantiate the BusinessTier class
+ 			bt=new BusinessTier();
+ 			
  			//Check if both text fields are empty
  			if(userSpecifiedName.equals("Enter Restaurant Name") &&
  					userSpecifiedAddress.equals("Enter Restaurant Street Address"))
@@ -348,9 +357,43 @@ public class GUI extends Applet implements ActionListener, FocusListener
  				repaint();
  				return;
  			}
+ 			//If both fields are filled
+ 			else if(!userSpecifiedName.equals("Enter Restaurant Name") &&
+ 					!userSpecifiedAddress.equals("Enter Restaurant Street Address"))
+ 			{
+ 				//Query based on given name and address
+ 				bi=bt.getRestaurant(userSpecifiedName, userSpecifiedAddress);
+ 				
+ 				if(bi==null)
+ 				{
+ 					//Show error message
+	 				JOptionPane.showMessageDialog(
+		 	                    null,
+		 	                  "No restaurant with the name ["+
+	                		userSpecifiedName+"] with the address ["+userSpecifiedAddress
+	                				+ "] was found in the database.",
+		 	                    "Attention!",
+		 	                    JOptionPane.INFORMATION_MESSAGE,null);
+	 		 		image=getImage("noData");
+	 	 			repaint();
+	 	 			return;
+ 				}
+ 				
+ 				//Get display data
+ 				userSpecifiedName=bi.getName();
+ 				userSpecifiedAddress=bi.getAddress();
+ 				inspectionDate=bi.getInspectionDate();
+ 				image=getImage(bi.getResult());
+ 				
+ 				//Set label text
+ 				name.setText("Name of facility: "+userSpecifiedName);
+ 				address.setText("Address: "+userSpecifiedAddress);
+ 				date.setText("Date of inspection: "+inspectionDate);
+ 				
+ 				repaint();
+ 	 			return;
+ 			}
  			
- 			//Instantiate the BusinessTier class
- 			bt=new BusinessTier();
  			
  			//See if the name field is not blank
  			if(!(userSpecifiedName.equals("Enter Restaurant Name")))
@@ -503,6 +546,9 @@ public class GUI extends Applet implements ActionListener, FocusListener
 	 	 			userSpecifiedName=info.get(0).getName();
 	 	 			name.setText("Name of facility: "+userSpecifiedName);
 	 	 			
+	 	 			//Set address as address field
+	 	 			userSpecifiedAddress=addressField.getText().toUpperCase();
+	 	 			
 	 	 			//Get the corresponding image to the result of the query
 	 	 			image=getImage(info.get(0).getResult());
 	 	 			
@@ -599,6 +645,9 @@ public class GUI extends Applet implements ActionListener, FocusListener
 	 			{
 	 				//Get the corresponding image to the result of the query
 	 	 			image=getImage(info.get(0).getResult());
+	 	 			
+	 	 			//Set name of facility
+	 	 			userSpecifiedName=info.get(0).getName();
 	 	 			
 	 	 			//Set the date of the date label
 	 	 			inspectionDate=info.get(0).getInspectionDate();
