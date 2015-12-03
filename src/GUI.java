@@ -24,8 +24,7 @@ import java.util.Arrays;
  * 
  */
 
-public class GUI extends Applet implements ActionListener, ItemListener, 
-							MouseListener, FocusListener, ListSelectionListener
+public class GUI extends Applet implements ActionListener, FocusListener
 {
  	private JButton searchButton;			//Button for executing the search
  	private JButton clearButton;			//Button for clearing fields
@@ -357,8 +356,6 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  			if(!(userSpecifiedName.equals("Enter Restaurant Name")))
  			{
  	 			//Query the database for list of possible names based on input
- 				System.out.println(userSpecifiedName);
- 				
  				names=bt.getSuggestedNames(userSpecifiedName);
  				
  				if(!userSpecifiedAddress.equals("Enter Restaurant Street Address"))
@@ -375,19 +372,15 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  	 	                    "Attention!",
  	 	                    JOptionPane.INFORMATION_MESSAGE,null);
  		 			image=getImage("noData");
- 		 			System.out.println(1);
  					repaint();
  					return;
  				}
  				else if(names.size()==1)
  				{
- 		 			System.out.println(2);
  					userSpecifiedName=names.get(0).getName();
  				}
  				else
  				{
- 		 			System.out.println(3);
-
 					//Inform the user that there was more than one facility found
 					JOptionPane.showMessageDialog(
 		                    null,
@@ -429,7 +422,6 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	 				//Set the text of the address label
 	 				name.setText("Name of facility: "+nameStringArray[selectedIndex]);
 	 				userSpecifiedName=nameStringArray[selectedIndex];
- 		 			System.out.println(userSpecifiedName);
  				}
  				
  				
@@ -439,8 +431,6 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  	 			//Check if the result was empty
  	 			if((result==null||result.size()==0))
  	 			{
- 		 			System.out.println(4);
-
  	 				//User did not enter a street address
  	 				if(userSpecifiedAddress.equals("Enter Restaurant Street Address"))
  	 				{
@@ -487,9 +477,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  			}
  			//Query the database using the address since there was no name specified
  			else
- 			{
-		 		System.out.println(5);
-		 		
+ 			{		 		
  				//Set the name of the name label
  	 			name.setText("Name of facility: ");
  	 			
@@ -511,8 +499,9 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	 	 		}
 	 	 		else
 	 	 		{
-	 	 			//TODO: Set name as name returned from query
-	 	 			//userSpecifiedName=info.get(0).getName();
+	 	 			//Set name as name returned from query
+	 	 			userSpecifiedName=info.get(0).getName();
+	 	 			name.setText("Name of facility: "+userSpecifiedName);
 	 	 			
 	 	 			//Get the corresponding image to the result of the query
 	 	 			image=getImage(info.get(0).getResult());
@@ -543,7 +532,6 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  			//Check if the query returned more than one facility
  			if(result.size()>1)
  			{
-		 		System.out.println(6);
 		 		if(userSpecifiedAddress.equals("Enter Restaurant Street Address"))
 		 		{
 	 				//Inform the user that there was more than one facility found
@@ -595,8 +583,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	 	 		
 	 	 		if(info==null||info.size()==0)
 	 	 		{
-		 			System.out.println(7);
-
+	 	 			//Show error message
 	 				JOptionPane.showMessageDialog(
 		 	                    null,
 		 	                  "No restaurant with the name ["+
@@ -645,6 +632,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 			img=null;
  		}//end if(e.getSource()==clearButton)
  		
+ 		//If the view details button was clicked
  		if(e.getSource()==viewDetails)
  		{
  			//BusinessTier declaration
@@ -857,32 +845,5 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 		return returnImage;		
 	}
 	
-	//The following are unused methods of the implemented interfaces
-	public void itemStateChanged(ItemEvent e)
- 	{
- 	}
-	public void valueChanged(ListSelectionEvent l)
-	{
-	}
- 	
- 	public void mouseClicked(MouseEvent e) 
- 	{
- 	}
-	
-	public void mousePressed(MouseEvent e) 
-    {
- 	}
-
-    public void mouseReleased(MouseEvent e) 
- 	{
- 	}
-
-    public void mouseEntered(MouseEvent e) 
-    {
- 	}
-
- 	public void mouseExited(MouseEvent e)
- 	{
- 	}
 }//end class GUI
 
