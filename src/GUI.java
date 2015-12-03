@@ -333,7 +333,7 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  			
  			//Initialize names container to null
  			names=null;
- 			//names=new ArrayList<BusinessTierObjects.RestaurantName>();
+ 			names=new ArrayList<BusinessTierObjects.RestaurantName>();
  			
  			//Check if both text fields are empty
  			if(userSpecifiedName.equals("Enter Restaurant Name") && 
@@ -360,18 +360,36 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  			{
  	 			//Query the database for list of possible names based on input
  				System.out.println(userSpecifiedName);
+ 				
  				names=bt.getSuggestedNames(userSpecifiedName);
  				
- 				if(names==null||names.size()==0)
+ 				if(!userSpecifiedAddress.equals("Enter Restaurant Street Address"))
  				{
- 					System.out.println("No names found ");
+ 					//info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
+ 					
+ 				}
+ 				else if(names==null||names.size()==0)
+ 				{
+ 					JOptionPane.showMessageDialog(
+ 	 	                    null,
+ 	 	                  "We found no matches for your search for ["+ 
+                    		userSpecifiedName+"] in the database.",
+ 	 	                    "Attention!",
+ 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+ 		 			image=getImage("noData");
+ 		 			System.out.println(1);
+ 					repaint();
+ 					return;
  				}
  				else if(names.size()==1)
  				{
+ 		 			System.out.println(2);
  					userSpecifiedName=names.get(0).getName();
  				}
  				else
  				{
+ 		 			System.out.println(3);
+
 					//Inform the user that there was more than one facility found
 					JOptionPane.showMessageDialog(
 		                    null,
@@ -413,6 +431,8 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 	 				//Set the text of the address label
 	 				name.setText("Name of facility: "+nameStringArray[selectedIndex]);
 	 				userSpecifiedName=nameStringArray[selectedIndex];
+ 		 			System.out.println(userSpecifiedName);
+
  				}
  				
  				
@@ -420,48 +440,52 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  	 			result=bt.getRestaurant(userSpecifiedName);
  	 			
  	 			//Check if the result was empty
- 	 			if((result==null||result.size()==0)&&
- 	 					userSpecifiedAddress.equals("Enter Restaurant Street Address"))
+ 	 			if((result==null||result.size()==0))
  	 			{
+ 		 			System.out.println(4);
+
+ 	 				//User did not enter a street address
+ 	 				if(userSpecifiedAddress.equals("Enter Restaurant Street Address"))
+ 	 				{
  	 				//Result was empty, so show error message
- 	 				JOptionPane.showMessageDialog(
- 	 	                    null,
- 	 	                    "No restaurant named "+ 
- 	 	                    		userSpecifiedName+" was found in the database."
- 	 	                    				+ " Try entering an address and searching again.",
- 	 	                    "Attention!",
- 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
- 	 				repaint();
- 	 				return;
+ 	 	 				JOptionPane.showMessageDialog(
+ 	 	 	                    null,
+ 	 	 	                    "No restaurant named ["+ 
+ 	 	 	                    		userSpecifiedName+"] was found in the database."
+ 	 	 	                    				+ " Try entering an address and searching again.",
+ 	 	 	                    "Attention!",
+ 	 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+ 	 	 				repaint();
+ 	 	 				return;
+ 	 				}
+ 	 				else
+ 	 				{
+ 	 					//Try to re-query with the address if the address field is not blank
+ 	 	 				JOptionPane.showMessageDialog(
+ 	 	 	                    null,
+ 	 	 	                  "No restaurant named ["+
+ 	                    		userSpecifiedName+"] was found in the database."+
+ 	                    			  " Attempting to re-query with the given address...",
+ 	 	 	                    "Attention!",
+ 	 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
+ 	 	 				
+ 	 	 				//Query the database based on the address of the facility 	 				
+ 	 	 	 			info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
+ 	 				}
  	 			}
- 	 			
- 	 			//Try to re-query with the address if the address field is not blank
- 	 			if((result==null||result.size()==0)&&
- 	 					!(userSpecifiedAddress.equals("Enter Restaurant Street Address")))
- 	 			{
- 	 				JOptionPane.showMessageDialog(
- 	 	                    null,
- 	 	                  "No restaurant named "+ 
-                    		userSpecifiedName+" was found in the database."+
-                    			  " Attempting to re-query with the given address...",
- 	 	                    "Attention!",
- 	 	                    JOptionPane.INFORMATION_MESSAGE,null);
- 	 				
- 	 				//Query the database based on the address of the facility 	 				
- 	 	 			info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
- 	 			}
- 	 			
  			}
  			//Query the database using the address since there was no name specified
  			else
  			{
+		 			System.out.println(5);
+
  				//Set the name of the name label
  	 			name.setText("Name of facility: ");
  	 			
 	 			//Query the database based on the address of the facility
 	 	 		info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
 	 	 		
-	 	 		if(result==null)
+	 	 		if(info==null)
 	 	 		{
 	 	 			JOptionPane.showMessageDialog(
  	 	                    null,
@@ -476,10 +500,21 @@ public class GUI extends Applet implements ActionListener, ItemListener,
 
  			}
  			
- 			
+ 			if(result.size()==1)
+ 			{
+ 				userSpecifiedAddress=result.get(0).getAddress();
+ 				
+ 				//Get the corresponding image to the result of the query
+ 	 			image=getImage(result.get(0).getResult());
+ 	 			
+ 	 			//Set the date of the date label
+ 	 			date.setText("Date of inspection: "+result.get(0).getInspectionDate());
+ 			}
  			//Check if the query returned more than one facility
  			if(result.size()>1)
  			{
+		 			System.out.println(6);
+
  				//Inform the user that there was more than one facility found
  				JOptionPane.showMessageDialog(
  	                    null,
@@ -525,33 +560,36 @@ public class GUI extends Applet implements ActionListener, ItemListener,
  				
  				//Query the database based on the address of the facility
 	 	 		info=bt.getRestaurantWithAddressField(userSpecifiedAddress);
- 			
+	 	 		
+	 	 		if(info==null||info.size()==0)
+	 	 		{
+		 			System.out.println(7);
+
+	 				JOptionPane.showMessageDialog(
+		 	                    null,
+		 	                  "No restaurant with the name ["+
+	                		userSpecifiedName+"] or the address "+userSpecifiedAddress
+	                				+ " was found in the database.",
+		 	                    "Attention!",
+		 	                    JOptionPane.INFORMATION_MESSAGE,null);
+	 	 			repaint();
+	 	 			return;
+	 	 		}
+	 			else
+	 			{
+	 				//Get the corresponding image to the result of the query
+	 	 			image=getImage(info.get(0).getResult());
+	 	 			
+	 	 			//Set the date of the date label
+	 	 			date.setText("Date of inspection: "+info.get(0).getInspectionDate());
+	 			}
  			}
  			
- 			if(info==null||info.size()==0){
- 				JOptionPane.showMessageDialog(
-	 	                    null,
-	 	                  "No restaurant with the name "+ 
-                		userSpecifiedName+" or the address "+userSpecifiedAddress
-                				+ " was found in the database.",
-	 	                    "Attention!",
-	 	                    JOptionPane.INFORMATION_MESSAGE,null);
- 	 			repaint();
- 	 			return;
- 			}
+ 		
  			//Set the name and address of the appropriate labels
 	 		name.setText("Name of facility: "+userSpecifiedName);
 	 		address.setText("Address: "+userSpecifiedAddress);
-
 	 		
- 			//Get the corresponding image to the result of the query
- 			image=getImage(info.get(0).getResult());
- 			
- 			System.out.println(info.get(0).getResult());
-			
- 			//Set the date of the date label
- 			date.setText("Date of inspection: "+info.get(0).getInspectionDate());
- 			
 			//Display the image in the JLabel
 	 		results.setIcon(image);
  		}
