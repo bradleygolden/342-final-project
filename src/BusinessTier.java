@@ -42,7 +42,7 @@ public class BusinessTier {
 
 	}
 	
-	public String getViolations(String name, String address, String date)
+	public String[] getViolations(String name, String address, String date)
 	//PRE:
 	//POST:
 	{
@@ -83,8 +83,9 @@ public class BusinessTier {
 			}
 			else
 			{
-				organizedViolations = violations.split("[]");
-				return violations;
+				organizedViolations = violations.split("[|]");
+				
+				return organizedViolations;
 			}
 					
 		}
@@ -111,8 +112,6 @@ public class BusinessTier {
 		partialString = name.split("[^a-zA-Z0-9]");
 		stringToQuery = partialString[0];
 		
-		//TODO:
-		// Make this more specific
 		sql = String.format("SELECT DISTINCT DBA_Name"
 							+ " FROM FoodInspections"
 							+ " WHERE UPPER(DBA_Name) LIKE UPPER(\'%%%s%%\') "
@@ -165,7 +164,6 @@ public class BusinessTier {
 			
 		try
 		{
-			//business = new BusinessTierObjects();
 			prev = " ";
 			name = " ";
 			
@@ -207,8 +205,6 @@ public class BusinessTier {
 		BusinessTierObjects.Restaurant aRestaurant;
 		ArrayList<BusinessTierObjects.Restaurant> rList;
 		String stringQuery;
-		
-		
 		
 		stringQuery = businessName.replace("'", "''");
 		
@@ -269,6 +265,7 @@ public class BusinessTier {
 	public BusinessTierObjects.RestaurantBasicInfo getRestaurant(String name, String address)
 	{
 		
+		
 		sql = String.format("SELECT TOP 1 Results, Inspection_Date"
 							+" FROM FoodInspections"
 							+" WHERE Address = \'%s\' AND DBA_Name = \'%s\'" 
@@ -304,48 +301,48 @@ public class BusinessTier {
 	{
 		BusinessTier business = new BusinessTier();
 		
-		business.getRestaurant("Subway");
-		
-		business.getRestaurantWithAddressField("1 E JACKSON BLVD");
-		
-		business.getRestaurant("Chartwells @ DePaul University","1 E JACKSON BLVD");
-		
-		ArrayList<BusinessTierObjects.RestaurantName> names = new ArrayList<BusinessTierObjects.RestaurantName>();
-		
-//		names = business.getSuggestedNames("BurGER");
-//			
+//		business.getRestaurant("Subway");
+//		
+//		business.getRestaurantWithAddressField("1 E JACKSON BLVD");
+//		
+//		business.getRestaurant("Chartwells @ DePaul University","1 E JACKSON BLVD");
+//		
+//		ArrayList<BusinessTierObjects.RestaurantName> names = new ArrayList<BusinessTierObjects.RestaurantName>();
+//		
+////		names = business.getSuggestedNames("BurGER");
+////			
+////		for(BusinessTierObjects.RestaurantName name : names)
+////		{
+////			System.out.println(name.getName());
+////		}
+//		
+//		names = business.getSuggestedNames("McDonald's");
+//		
 //		for(BusinessTierObjects.RestaurantName name : names)
 //		{
 //			System.out.println(name.getName());
 //		}
-		
-		names = business.getSuggestedNames("McDonald's");
-		
-		for(BusinessTierObjects.RestaurantName name : names)
-		{
-			System.out.println(name.getName());
-		}
-		
-		names = business.getSuggestedNames("Subway");
-		
-		for(BusinessTierObjects.RestaurantName name : names)
-		{
-			System.out.println(name.getName());
-		}
-		
-		System.out.println("\n\nReturning bad values");
-		String string;
-		
-		string = business.getViolations("Mcdonalds", "1443 E 87TH ST", "2015-10-01 00:00:00.0");
-		
-		if(string == null)
-		{
-			System.out.println("There are no violations listed in the database for that restaurant");
-		}
-		else
-		{
-			System.out.print(string);
-		}
+//		
+//		names = business.getSuggestedNames("Subway");
+//		
+//		for(BusinessTierObjects.RestaurantName name : names)
+//		{
+//			System.out.println(name.getName());
+//		}
+//		
+//		System.out.println("\n\nReturning bad values");
+//		String string;
+//		
+//		string = business.getViolations("Mcdonalds", "1443 E 87TH ST", "2015-10-01 00:00:00.0");
+//		
+//		if(string == null)
+//		{
+//			System.out.println("There are no violations listed in the database for that restaurant");
+//		}
+//		else
+//		{
+//			System.out.print(string);
+//		}
 		
 		System.out.println("Returning good values");
 		System.out.println(business.getViolations("McDonalds", "3615 W IRVING PARK RD", "2015-10-22 00:00:00.0"));
